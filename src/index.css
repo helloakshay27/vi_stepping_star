@@ -1,0 +1,271 @@
+
+#root{
+  padding:0px;
+}
+
+.header{
+  display:flex;
+  justify-content: space-between;
+  align-items: center;
+  padding:30px;
+  background-color:#ffffff ;
+    filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.1));
+  
+}
+.dashboard-grid-1 {
+  display: grid;
+  
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-auto-rows: auto; 
+  gap: 20px; 
+}
+
+.dashboard-grid-2{
+  display:grid;
+  grid-template-columns:1fr 2fr;
+  grid-auto-rows:auto;
+  gap:20px;
+}
+
+.function-ranking-card{
+  grid-column:1/2;
+}
+.bar-card{
+  grid-column:2 /3;
+}
+
+.card {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 15px 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  display: flex; 
+  flex-direction: column; 
+}
+
+.heading{
+  background-color:rgba(255, 255, 255, 1);
+  margin:30px 0px;
+  p{
+    font-size: 32px;
+    font-weight: 600;
+    color:rgba(107, 107, 107, 1);
+    padding:10px;
+    margin:0px;
+  }
+}
+
+/* --- Grid Item Placement --- */
+
+.gender-card {
+  grid-column: 1 / 2; 
+  grid-row: 1 / 2;  
+}
+
+.step-count-card {
+  grid-column: 1 / 2; 
+  grid-row: 2 / 3;  
+}
+
+.achievers-card {
+  grid-column: 2 / 3;
+  grid-row: 1 / 3;   
+}
+
+.ranking-card {
+  grid-column: 3 / 4;
+  grid-row: 1 / 3;   
+}
+
+
+
+.card-header {
+  display: flex;
+  justify-content: space-between; /* Pushes title left, icon right */
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee; /* Optional: line below header */
+  background-color: #ffffff;
+  min-height: 20px; /* Ensure header has some height even if empty */
+}
+
+.card-header h3 {
+  margin: 0;
+  font-size: 16px;
+  color:rgba(0, 0, 0, 1);
+  font-weight: 600;
+}
+
+.card-header .icon {
+  cursor: pointer;
+  color: #888;
+  /* Add styling for your icon (font size, etc.) */
+}
+
+.card-body {
+  flex-grow: 1; /* Allows body to take remaining space */
+  /* Add specific styles for charts, lists, etc. */
+}
+
+/* Example: Step Count Card Specific Styles */
+ .card-body {
+  display: flex;
+  flex-direction: column;
+  /* align-items: flex-start; Align items to the left */
+  justify-content: center;
+  padding-top: 10px;
+}
+.step-count-card  {
+  margin-bottom: 5px;
+  padding:0px;
+  display:inline;
+  /* Add color/image for icon */
+}
+
+.step-icon{
+  background-color: rgba(238, 11, 11, 1);
+  border-radius:27.86px;
+  width:48px;
+  height:48px;
+  padding:10px;
+  display:inline;
+}
+.step-count-card .step-value {
+  font-size: 40px;
+  font-weight: bold;
+  color: #222;
+  line-height: 1.1;
+}
+.step-value{
+  width:fit-content;
+  display: inline;
+  margin-left:10px;
+}
+.step-count-card .step-label {
+  font-size: 0.9em;
+  color: #555;
+  margin-top: 5px;
+}
+
+
+/* Example: Rank List Styles */
+.rank-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 0.9em;
+  height:100%;
+}
+.rank-list li {
+  display: grid;
+  grid-template-columns: 50px 1fr 80px; 
+  padding: 8px 5px;
+  border-bottom: 1px solid #f5f5f5;
+  color:rgba(0, 0, 0, 1);
+  background-color:rgba(253, 244, 241, 1) ;
+  margin: 10px 0px;
+}
+.rank-list li:first-child { /* Header row */
+  font-weight: bold;
+  color: #e74c3c; /* Reddish color like in image */
+  border-bottom: 2px solid #eee;
+  padding-bottom: 10px;
+  margin-bottom: 5px;
+  }
+.rank-list li:last-child {
+  border-bottom: none;
+}
+.rank-list li span:nth-child(1) { /* Rank column */
+ text-align: left;
+ padding-left: 5px;
+}
+.rank-list li span:nth-child(3) { /* Count/Steps column */
+  text-align: right;
+  font-weight: 600;
+  padding-right: 5px;
+}
+
+
+/* Example: Gender Card Specific Styles */
+.gender-card .legend {
+  margin-top: 15px;
+  font-size: 0.85em;
+}
+.gender-card .legend span {
+  margin-right: 15px;
+  display: inline-flex; /* Align dot and text */
+  align-items: center;
+}
+.gender-card .color-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 5px;
+}
+.gender-card .color-dot.red { background-color: #e74c3c; }
+.gender-card .color-dot.yellow { background-color: #f1c40f; }
+.gender-card .card-body p { /* Placeholder text */
+  text-align: center;
+  padding: 30px 0;
+  color: #aaa;
+}
+
+
+/* --- Responsiveness (Example for smaller screens) --- */
+@media (max-width: 768px) {
+  .dashboard-grid {
+      /* Stack cards vertically */
+      grid-template-columns: 1fr; /* Single column */
+      /* Reset explicit row/column placement */
+  }
+
+  /* Reset spans and specific placements for all cards */
+  .gender-card,
+  .step-count-card,
+  .achievers-card,
+  .ranking-card {
+      grid-column: auto; /* Let grid place them automatically */
+      grid-row: auto;    /* Let grid place them automatically */
+  }
+}
+
+.btn-red{
+  background-color: rgba(238, 39, 55, 1);
+  color:rgba(255, 255, 255, 1);
+  border:none;
+  border-radius: 6px;
+  width:151px;
+  height:48px;
+  padding: 12px 16px 12px 16px;
+}
+
+.calendar-icon {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  color: var(--red) !important;
+  z-index: 1;
+}
+
+.date-input {
+  padding-left: 40px;
+  width: 180px;
+  height: 48px;
+  border: 1px solid rgba(217, 217, 217, 1) !important;
+  background: var(--card-bg-color);
+  border-radius: 5px;
+  margin: 10px;
+  /* font-size: small; */
+}
+
+.date-input-lg {
+  padding: 10px 12px 10px 40px !important;
+  border: 1px solid #b3b2b2 !important;
+  background-color: #faf8f5 !important;
+  /* font-size: small; */
+}
