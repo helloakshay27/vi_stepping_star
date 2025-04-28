@@ -7,12 +7,10 @@ import '../LoadingOverlay.css'; // We'll create this CSS file next
  * @param {boolean} props.isLoading - Controls whether the overlay is visible.
  */
 function Loader({ isLoading }) {
-  // If not loading, don't render anything
   if (!isLoading) {
     return null;
   }
 
-  // Otherwise, render the overlay and spinner
   return (
     <div className="loading-overlay" aria-live="assertive" role="alert">
       <div className="loading-spinner"></div>

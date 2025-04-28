@@ -221,7 +221,6 @@ useEffect(() => {
               className="w-full "
               styles={customStyles}
               menuPortalTarget={typeof window !== 'undefined' ? document.body : null}
-            //   classNamePrefix="react-select" 
               />
                 
                 <CircleUser className="user-icon" />
@@ -232,6 +231,10 @@ useEffect(() => {
                     <span className="fw-medium fs-2 " style={{ color: "rgba(34, 43, 69, 1)" ,margin:"20px"}}>VI Stepping Stars Dashboard</span>
                     <div className="d-flex align-items-center gap-2">
                         <div className="position-relative">
+                        <div style={{ display: "flex", flexDirection: "column" }}>
+        <label style={{ fontSize: "12px", color: "grey", textAlign: "left" }}>
+          Select Start Date
+        </label>
                             <DatePicker
                                 selected={startDate}
                                 onChange={(date) => setStartDate(date)}
@@ -242,9 +245,14 @@ useEffect(() => {
                                 className=" date-input "
                             />
                             <Calendar className="calendar-icon" />
+                            </div>
                         </div>
-                        <span className="to">TO</span>
+                        <span className="to" style={{marginTop:"15px"}}>TO</span>
                         <div className="position-relative">
+                        <div style={{ display: "flex", flexDirection: "column" }}>
+        <label style={{ fontSize: "12px", color: "grey", textAlign: "left" }}>
+          Select End Date
+        </label>
                             <DatePicker
                                 selected={endDate}
                                 onChange={(date) => setEndDate(date)}
@@ -256,6 +264,7 @@ useEffect(() => {
                                 className="date-input "
                             />
                             <Calendar className="calendar-icon" />
+                        </div>
                         </div>
                         <button className="btn-red" onClick={formatData} >
                             Apply
