@@ -1,0 +1,63 @@
+/* LoadingOverlay.css */
+
+.loading-overlay {
+    /* Positioning to cover the entire screen */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  
+    /* Background: semi-transparent black */
+    background-color: rgba(0, 0, 0, 0.4);
+  
+    /* Blur Effect (for modern browsers) */
+    /* Apply backdrop blur to blur content *behind* the overlay */
+    -webkit-backdrop-filter: blur(5px); /* Safari */
+    backdrop-filter: blur(5px);
+  
+    /* Centering the spinner inside */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  
+    /* Ensure it's on top of other content */
+    z-index: 10000;
+  
+    /* Smooth appearance/disappearance (optional) */
+    opacity: 1;
+    transition: opacity 0.2s ease-in-out;
+  }
+  
+  /* Style for the red spinner */
+  .loading-spinner {
+    width: 60px; /* Adjust size as needed */
+    height: 60px;
+    border-radius: 50%; /* Makes it circular */
+  
+    /* Red border: Use a lighter red for the track and solid red for the spinning part */
+    border: 6px solid rgba(255, 0, 0, 0.3); /* Light red track */
+    border-top-color: red; /* Solid red spinner part */
+  
+    /* Animation: make it spin */
+    animation: spin 1s linear infinite;
+  }
+  
+  /* Define the spinning animation */
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  
+  /* Optional: Hide overlay instantly when isLoading becomes false if needed */
+  /* You might control visibility purely via the conditional rendering in JSX */
+  /*
+  .loading-overlay:not([aria-busy="true"]) {
+    opacity: 0;
+    pointer-events: none;
+  }
+  */

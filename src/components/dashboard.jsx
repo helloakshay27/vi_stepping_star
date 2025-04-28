@@ -4,7 +4,9 @@ import axios from 'axios';
 import { User } from "lucide-react"
 import { format } from "date-fns";
 import DatePicker from "react-datepicker";
-import { ArrowUp, Calendar, Download, Wallet } from "lucide-react";
+import { ArrowUp, Calendar, Download, Wallet,CircleUser } from "lucide-react";
+import Select , { components } from "react-select";
+import Loader from "./Loader";
 import {
     BarChart,
     Bar,
@@ -18,13 +20,16 @@ import {
     Cell,
     ResponsiveContainer,
 } from 'recharts';
+
+
+
 const dashboard = () => {
 
 
-    const [startDate, setStartDate] = useState();
-    const [endDate, setEndDate] = useState();
+    const [startDate, setStartDate] = useState(new Date());
+    const [endDate, setEndDate] = useState(new Date());
     const [names,setNames]=useState([]);
-    const [selectedId, setSelectedId] = useState('');
+    const [selectedId, setSelectedId] = useState([]);
 
     const[stepCount,setStepCount]=useState(0);
     const[gender,setGender]=useState(0);
@@ -32,8 +37,8 @@ const dashboard = () => {
     const[functionRanking,setFunctionRanking]=useState([]);
     const[clusterRanking,setClusterRanking]=useState([]);
     const[circleRanking,setCircleRanking]=useState([]);
-    
-    
+  
+    const[loading,setLoading]=useState(false);
 
 
     const [pieChartData, setPieChartData] = useState([]);
@@ -72,6 +77,56 @@ useEffect(() => {
 
     const COLORS = ["rgba(238, 11, 11, 1)", "rgba(255, 197, 0, 1)"];
 
+    const formatData=()=>{
+        console.log(startDate,endDate);
+        const formattedStartDate = startDate ? startDate.toISOString().split("T")[0] : "";
+        const formattedEndDate = endDate ? endDate.toISOString().split("T")[0] : "";
+        const formattedId = selectedId.length > 0 ? selectedId.join(",") : "";
+        if (selectedId.length > 0) {
+            updateData(formattedId, formattedStartDate, formattedEndDate);
+        }
+    }
+
+    const updateData = async (formattedId, formattedStartDate, formattedEndDate) => {
+        setLoading(true);
+      try {
+        const genderData = await axios.get(
+          `https://reports.lockated.com/api-fm/stepathon/get-gender-participation/?site_id=${formattedId}&from_date=${formattedStartDate}&to_date=${formattedEndDate}`
+        );
+        setGender(genderData.data.response1);
+
+        const achieversData = await axios.get(
+          `https://reports.lockated.com/api-fm/stepathon/circle-wise-20k-acheiver/?site_id=${formattedId}&from_date=${formattedStartDate}&to_date=${formattedEndDate}`
+        );
+        setAchieversCount(achieversData.data.data);
+
+        const functionRankingData = await axios.get(
+          `https://reports.lockated.com/api-fm/stepathon/function-leveling-ranking/?site_id=${formattedId}&from_date=${formattedStartDate}&to_date=${formattedEndDate}`
+        );
+        setFunctionRanking(functionRankingData.data.data);
+
+        const clusterRankingData = await axios.get(
+          `https://reports.lockated.com/api-fm/stepathon/cluster-leveling-ranking/?site_id=${formattedId}&from_date=${formattedStartDate}&to_date=${formattedEndDate}`
+        );
+        setClusterRanking(clusterRankingData.data.data);
+
+        const circleRankingData = await axios.get(
+          `https://reports.lockated.com/api-fm/stepathon/circle-leveling-ranking/?site_id=${formattedId}&from_date=${formattedStartDate}&to_date=${formattedEndDate}`
+        );
+        setCircleRanking(circleRankingData.data.data);
+
+        const stepCountData = await axios.get(
+          `https://reports.lockated.com/api-fm/stepathon/get-organisation-daily-step-count/?site_id=${formattedId}&from_date=${formattedStartDate}&to_date=${formattedEndDate}`
+        );
+        setStepCount(stepCountData.data.response);
+
+      } catch (error) {
+        console.error("Error fetching data", error);
+      }finally{
+        setLoading(false);
+      }
+    };
+
     useEffect(() => {
         const fetchNames=async()=>{
         const name=await axios.get("https://reports.lockated.com/api-fm/stepathon/vi-site-lists/");
@@ -81,56 +136,100 @@ useEffect(() => {
 
         fetchNames();
     },[]);
-
-    useEffect(()=>{
-        const updateData=async(formattedStartDate,formattedEndDate)=>{
-            const stepCount=await axios.get(`https://reports.lockated.com/api-fm/stepathon/get-organisation-daily-step-count/?site_id=${selectedId}&from_date=${formattedStartDate}&to_date=${formattedEndDate}`);
-            setStepCount(stepCount.data.response);
-            const gender=await axios.get(`https://reports.lockated.com/api-fm/stepathon/get-gender-participation/?site_id=${selectedId}&from_date=${formattedStartDate}&to_date=${formattedEndDate}`);
-            setGender(gender.data.response1);
-            const achieversCount=await axios.get(`https://reports.lockated.com/api-fm/stepathon/circle-wise-20k-acheiver/?site_id=${selectedId}&from_date=${formattedStartDate}&to_date=${formattedEndDate}`);
-            setAchieversCount(achieversCount.data.data);
-            const functionRanking=await axios.get(`https://reports.lockated.com/api-fm/stepathon/function-leveling-ranking/?site_id=${selectedId}&from_date=${formattedStartDate}&to_date=${formattedEndDate}`);
-            setFunctionRanking(functionRanking.data.data);
-            const clusterRanking=await axios.get(`https://reports.lockated.com/api-fm/stepathon/cluster-leveling-ranking/?site_id=${selectedId}&from_date=${formattedStartDate}&to_date=${formattedEndDate}`);
-            setClusterRanking(clusterRanking.data.data);
-            const circleRanking=await axios.get(`https://reports.lockated.com/api-fm/stepathon/circle-leveling-ranking/?site_id=${selectedId}&from_date=${formattedStartDate}&to_date=${formattedEndDate}`);
-            setCircleRanking(circleRanking.data.data);
-            console.log(stepCount,gender,achieversCount,functionRanking,clusterRanking,circleRanking);
-        }
-        console.log(selectedId,startDate,endDate);
-        if(selectedId && startDate && endDate){
-         const formattedStartDate = startDate.toISOString().split("T")[0];
-         const formattedEndDate = endDate.toISOString().split("T")[0];
-         console.log(formattedStartDate,formattedEndDate);
-            updateData(formattedStartDate,formattedEndDate);
-    }
+    useEffect(() => {
+       formatData();
         
-    },[selectedId,startDate,endDate]);
+    }, [selectedId]);
+    
+    const handleChange = (selectedOptions) => {
+        const ids = selectedOptions.map((option) => option.value);
+        setSelectedId(ids);
+        console.log(selectedId);
+      };
+      
+      const customStyles = {
+        control: (provided, state) => ({
+          ...provided,
 
-    const handleChange=(e)=>{
-        setSelectedId(e.target.value);
-    }
+          maxWidth:"300px",
+    
+        }),
+        valueContainer: (provided, state) => ({
+          ...provided,
+          height: '40px', // Set your desired fixed height here
+          overflowY: 'hidden',
+          overflowX: 'auto',
+          flexWrap: 'nowrap',
+        }),
+        multiValue: (provided, state) => ({
+          ...provided,
+          // Ensure multivalues don't shrink too much if needed
+          flexShrink: 0,
+        }),
+        input: (provided, state) => ({
+          ...provided,
+          margin: '2px', // Adjust as needed
+        }),
+            // ... include your existing styles for control, valueContainer etc. ...
+           
+            // ... multiValue, input styles ...
+          
+            menu: (provided, state) => ({
+              ...provided, // Base styles are crucial
+              maxHeight: '200px', // Or your desired max-height/height e.g., '150px'
+              backgroundColor: 'white', // Ensure solid white background
+              zIndex: 5000, // High z-index for stacking
+              // Check for any opacity being applied by provided or external CSS
+              // opacity: 1, // Explicitly set if needed, but usually not required
+              border: '1px solid #DDD', // Optional: adds definition
+              boxShadow: '0 4px 10px rgba(0,0,0,0.1)', // Optional: enhances visual separation
+            }),
+          
+            menuList: (provided, state) => ({
+              ...provided, // Base styles
+              // --- Add vertical scroll when content overflows ---
+              overflowY: 'auto',
+              // --- Ensure list respects menu's max-height ---
+              // maxHeight: '200px', // Explicitly set if needed, matching menu's maxHeight
+              // Or often just inheriting works if menu has maxHeight set:
+              maxHeight: 'inherit',
+              // Ensure background just in case (usually inherits from menu)
+              // backgroundColor: 'white',
+            }),
+          
+            // If using portals:
+            menuPortal: (provided) => ({
+              ...provided,
+              zIndex: 9999, // Ensure portal container is also high
+            }),
+          };
+      
 
     return (
         <div>
             <div className='header'>
                 <img alt="logo" src="logo.png" />
-                <div>
-                <select value={selectedId} onChange={handleChange}>
-        <option value="">Select a name</option>
-        {names.map((user) => (
-          <option key={user.id} value={user.id}>
-            {user.name}
-          </option>
-        ))}
-      </select>
-                <User />
+                <div className="w-25 header-right">
+
+                <Select
+              isMulti // Enable multi-select
+              options={names.map((name) => ({ label: name.name, value: name.id }))}
+              onChange={handleChange}
+              placeholder="Select Categories..."
+              closeMenuOnSelect={false} // Keep menu open after selection for easier multi-select
+              hideSelectedOptions={true} // Keep selected options visible in the list
+              className="w-full "
+              styles={customStyles}
+              menuPortalTarget={typeof window !== 'undefined' ? document.body : null}
+            //   classNamePrefix="react-select" 
+              />
+                
+                <CircleUser className="user-icon" />
                 </div>
             </div>
             <div className="flex d-col gap-2 p-lg-3 p-md-2">
-                <div className="d-flex flex-row align-items-center justify-content-between p-3">
-                    <span className="fw-medium fs-3 text-20" style={{ color: "rgba(34, 43, 69, 1)" }}>VI Stepping Stars Dashboard</span>
+                <div className="d-flex flex-row align-items-center justify-content-between p-1 " style={{height:"60px"}}>
+                    <span className="fw-medium fs-2 " style={{ color: "rgba(34, 43, 69, 1)" ,margin:"20px"}}>VI Stepping Stars Dashboard</span>
                     <div className="d-flex align-items-center gap-2">
                         <div className="position-relative">
                             <DatePicker
@@ -158,7 +257,7 @@ useEffect(() => {
                             />
                             <Calendar className="calendar-icon" />
                         </div>
-                        <button className="btn-red" >
+                        <button className="btn-red" onClick={formatData} >
                             Apply
                         </button>
                     </div>
@@ -175,17 +274,16 @@ useEffect(() => {
 
                         </div>
                         <div class="card-body">
-                            <div className="bg-light shadow-sm rounded ">
-                                <h2 className="h5 fw-semibold mb-4 text-secondary">Group Distribution</h2>
+                            <div style={{height:"100%"}}>
 
-                                <ResponsiveContainer width="100%" height={250}>
-                                    <PieChart>
+                                <ResponsiveContainer width="100%" height={200}>
+                                    <PieChart >
                                         <Pie
                                             data={pieChartData}
                                             cx="50%"
                                             cy="50%"
                                             labelLine={false}
-                                            outerRadius={80}
+                                            outerRadius={100}
                                             fill="#8884d8"
                                             dataKey="value"
                                             label={({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
@@ -220,13 +318,13 @@ useEffect(() => {
                                         <Tooltip />
                                     </PieChart>
                                 </ResponsiveContainer>
-                            </div>
 
 
 
                             <div class="legend">
-                                <span><span class="color-dot red"></span> Male</span>
+                                <span style={{marginRight:"45px"}}  ><span class="color-dot red"></span> Male</span>
                                 <span><span class="color-dot yellow"></span> Female</span>
+                            </div>
                             </div>
                         </div>
                     </div>
@@ -285,7 +383,7 @@ useEffect(() => {
 
                 </div>
 
-                <div className='heading'>
+                <div className='heading' style={{backgroundColor:"rgb(255, 255, 255)"}}>
                     <p>Function statistics</p>
                 </div>
                 <div className='dashboard-grid-2'>
@@ -307,7 +405,7 @@ useEffect(() => {
                         </div>
                     </div>
                     <div className="card-body bar-card">
-                    <div className="bg-white shadow-md rounded-lg h-100">
+                    <div className="bg-white shadow-md rounded-lg h-100 card">
                             <h2 className="text-lg font-semibold m-4 text-gray-700" style={{ fontSize: "16px" }}>
                                 Function Wise Average Steps
                             </h2>
@@ -344,14 +442,14 @@ useEffect(() => {
 
                                     <Tooltip />
                                     {/* Legend removed */}
-                                    <Bar dataKey="steps" fill="#ff0000" name="Steps" barSize={45} />
+                                    <Bar dataKey="steps" fill={COLORS[1]} name="Steps" barSize={45} />
                                 </BarChart>
                             </ResponsiveContainer>
                         </div>
                     </div>
 
                 </div>
-                <div className="heading">
+                <div className="heading" >
                     <p >Cluster statistics</p>
                 </div>
                 <div className='dashboard-grid-2'>
@@ -370,11 +468,11 @@ useEffect(() => {
                         </div>
                     </div>
                     <div className="card-body bar-card">
-                        <div className="bg-white shadow-md rounded-lg h-100">
+                        <div className="bg-white shadow-md rounded-lg h-100 card">
                             <h2 className="text-lg font-semibold m-4 text-gray-700" style={{ fontSize: "16px" }}>
                                 Cluster Wise Average Steps
                             </h2>
-                            <ResponsiveContainer width="90%" height={400}>
+                            <ResponsiveContainer width="90%" height={400} >
                                 <BarChart
                                     data={barChartData1}
                                     margin={{ top: 10, right: 30, left: 80, bottom: 30 }}
@@ -387,7 +485,7 @@ useEffect(() => {
                                             position: "bottom",
                                             offset: 10,
                                             fontWeight: "bold",
-                                            fill: "#333"
+                                            fill: "#333",
                                         }}
                                     />
 
@@ -422,6 +520,7 @@ useEffect(() => {
                 </div>
 
             </div>
+            {loading? <Loader isLoading={loading} />: null};
         </div>
     )
 }
