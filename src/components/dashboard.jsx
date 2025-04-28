@@ -1,5 +1,6 @@
 import "react-datepicker/dist/react-datepicker.css";
 import React, { useState, useEffect } from 'react'
+import axios from 'axios';
 import { User } from "lucide-react"
 import { format } from "date-fns";
 import DatePicker from "react-datepicker";
@@ -19,35 +20,115 @@ import {
 } from 'recharts';
 const dashboard = () => {
 
+
     const [startDate, setStartDate] = useState();
     const [endDate, setEndDate] = useState();
+    const [names,setNames]=useState([]);
+    const [selectedId, setSelectedId] = useState('');
 
-    const [pieChartData, setPieChartData] = useState([
-        { name: "MALE", value: 322 },
-        { name: "FEMALE", value: 110 }
-    ])
+    const[stepCount,setStepCount]=useState(0);
+    const[gender,setGender]=useState(0);
+    const [achieversCount, setAchieversCount] = useState([]);
+    const[functionRanking,setFunctionRanking]=useState([]);
+    const[clusterRanking,setClusterRanking]=useState([]);
+    const[circleRanking,setCircleRanking]=useState([]);
+    
+    
 
-    const [barChartData, setBarChartData] = useState([
-        { cluster: "COR", steps: 18000 },
-        { cluster: "KER", steps: 14000 },
-        { cluster: "CODE", steps: 12000 },
-        { cluster: "BJO", steps: 10000 },
-        { cluster: "MUM", steps: 8000 },
-        { cluster: "TUP", steps: 6000 },
-        { cluster: "MPS", steps: 5000 },
-        // add remaining entries if the list scrolls further
 
-    ])
+    const [pieChartData, setPieChartData] = useState([]);
+
+useEffect(() => {
+  if (gender) {
+    setPieChartData([
+      { name: "MALE", value: gender.male || 0 },
+      { name: "FEMALE", value: gender.female || 0 }
+    ]);
+  }
+}, [gender]);
+
+
+const [barChartData1, setBarChartData1] = useState([]);
+const [barChartData2, setBarChartData2] = useState([]);
+
+useEffect(() => {
+  if (clusterRanking?.length > 0) {
+    const formattedData = clusterRanking.map(item => ({
+      cluster: item.cluster_name,
+      steps: item.avg_steps
+    }));
+    setBarChartData1(formattedData);
+  }
+  if(functionRanking?.length>0){
+    const formattedData = functionRanking.map(item => ({
+      function: item.department_name,
+      steps: item.avg_steps
+    }));
+    console.log(formattedData);
+    setBarChartData2(formattedData);
+  }
+}, [clusterRanking,functionRanking]);
+
 
     const COLORS = ["rgba(238, 11, 11, 1)", "rgba(255, 197, 0, 1)"];
+
+    useEffect(() => {
+        const fetchNames=async()=>{
+        const name=await axios.get("https://reports.lockated.com/api-fm/stepathon/vi-site-lists/");
+        setNames(name.data.data);
+        console.log(name);
+        }
+
+        fetchNames();
+    },[]);
+
+    useEffect(()=>{
+        const updateData=async(formattedStartDate,formattedEndDate)=>{
+            const stepCount=await axios.get(`https://reports.lockated.com/api-fm/stepathon/get-organisation-daily-step-count/?site_id=${selectedId}&from_date=${formattedStartDate}&to_date=${formattedEndDate}`);
+            setStepCount(stepCount.data.response);
+            const gender=await axios.get(`https://reports.lockated.com/api-fm/stepathon/get-gender-participation/?site_id=${selectedId}&from_date=${formattedStartDate}&to_date=${formattedEndDate}`);
+            setGender(gender.data.response1);
+            const achieversCount=await axios.get(`https://reports.lockated.com/api-fm/stepathon/circle-wise-20k-acheiver/?site_id=${selectedId}&from_date=${formattedStartDate}&to_date=${formattedEndDate}`);
+            setAchieversCount(achieversCount.data.data);
+            const functionRanking=await axios.get(`https://reports.lockated.com/api-fm/stepathon/function-leveling-ranking/?site_id=${selectedId}&from_date=${formattedStartDate}&to_date=${formattedEndDate}`);
+            setFunctionRanking(functionRanking.data.data);
+            const clusterRanking=await axios.get(`https://reports.lockated.com/api-fm/stepathon/cluster-leveling-ranking/?site_id=${selectedId}&from_date=${formattedStartDate}&to_date=${formattedEndDate}`);
+            setClusterRanking(clusterRanking.data.data);
+            const circleRanking=await axios.get(`https://reports.lockated.com/api-fm/stepathon/circle-leveling-ranking/?site_id=${selectedId}&from_date=${formattedStartDate}&to_date=${formattedEndDate}`);
+            setCircleRanking(circleRanking.data.data);
+            console.log(stepCount,gender,achieversCount,functionRanking,clusterRanking,circleRanking);
+        }
+        console.log(selectedId,startDate,endDate);
+        if(selectedId && startDate && endDate){
+         const formattedStartDate = startDate.toISOString().split("T")[0];
+         const formattedEndDate = endDate.toISOString().split("T")[0];
+         console.log(formattedStartDate,formattedEndDate);
+            updateData(formattedStartDate,formattedEndDate);
+    }
+        
+    },[selectedId,startDate,endDate]);
+
+    const handleChange=(e)=>{
+        setSelectedId(e.target.value);
+    }
 
     return (
         <div>
             <div className='header'>
                 <img alt="logo" src="logo.png" />
+                <div>
+                <select value={selectedId} onChange={handleChange}>
+        <option value="">Select a name</option>
+        {names.map((user) => (
+          <option key={user.id} value={user.id}>
+            {user.name}
+          </option>
+        ))}
+      </select>
                 <User />
+                </div>
             </div>
-            <div className="flex d-col gap-2 p-5">
+            <div className="flex d-col gap-2 p-lg-3 p-md-2">
                 <div className="d-flex flex-row align-items-center justify-content-between p-3">
                     <span className="fw-medium fs-3 text-20" style={{ color: "rgba(34, 43, 69, 1)" }}>VI Stepping Stars Dashboard</span>
                     <div className="d-flex align-items-center gap-2">
@@ -94,17 +175,17 @@ const dashboard = () => {
 
                         </div>
                         <div class="card-body">
-                            <div className="bg-light shadow-sm rounded p-4">
+                            <div className="bg-light shadow-sm rounded ">
                                 <h2 className="h5 fw-semibold mb-4 text-secondary">Group Distribution</h2>
 
-                                <ResponsiveContainer width="100%" height={300}>
+                                <ResponsiveContainer width="100%" height={250}>
                                     <PieChart>
                                         <Pie
                                             data={pieChartData}
                                             cx="50%"
                                             cy="50%"
                                             labelLine={false}
-                                            outerRadius={140}
+                                            outerRadius={80}
                                             fill="#8884d8"
                                             dataKey="value"
                                             label={({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
@@ -156,7 +237,7 @@ const dashboard = () => {
                                 <div class="step-icon">
                                     <img src="famicons_footsteps.png" />
                                 </div>
-                                <div class="step-value">327636</div>
+                                <div class="step-value">{stepCount?stepCount:0}</div>
                             </div>
                             <div>
                                 <span className="icon"><Download /></span>
@@ -174,13 +255,12 @@ const dashboard = () => {
                         <div class="card-body">
                             <ul class="rank-list">
                                 <li><span>Rank</span><span>Circle Name</span><span>User Count</span></li>
-                                <li><span>01</span><span>CORP-MUM</span><span>8</span></li>
-                                <li><span>02</span><span>CORP-PUNE</span><span>6</span></li>
-                                <li><span>03</span><span>SNOC-HYD</span><span>5</span></li>
-                                <li><span>04</span><span>BANGLORE</span><span>5</span></li>
-                                <li><span>05</span><span>DELHI</span><span>4</span></li>
-                                <li><span>06</span><span>GUJ</span><span>4</span></li>
-                                <li><span>07</span><span>MPS</span><span>3</span></li>
+                               { achieversCount.map((item, index) => (
+                                    <li><span>{index+1}</span><span>{item.circle_name}</span><span>{item.users_with_20k_steps}</span></li>
+                                ))
+                                
+                                }
+
                             </ul>
                         </div>
                     </div>
@@ -194,13 +274,11 @@ const dashboard = () => {
                         <div class="card-body">
                             <ul class="rank-list">
                                 <li><span>Rank</span><span>Circle Name</span><span>Avg steps</span></li>
-                                <li><span>01</span><span>CORP-MUM</span><span>987656</span></li>
-                                <li><span>02</span><span>CORP-PUNE</span><span>678769</span></li>
-                                <li><span>03</span><span>SNOC-HYD</span><span>558765</span></li>
-                                <li><span>04</span><span>BANGLORE</span><span>523415</span></li>
-                                <li><span>05</span><span>DELHI</span><span>488765</span></li>
-                                <li><span>06</span><span>GUJ</span><span>409876</span></li>
-                                <li><span>07</span><span>MPS</span><span>309867</span></li>
+                                { circleRanking.map((item, index) => (
+                                    <li><span>{index+1}</span><span>{item.circle_name}</span><span>{item.avg_steps}</span></li>
+                                ))
+                                
+                                }
                             </ul>
                         </div>
                     </div>
@@ -220,31 +298,29 @@ const dashboard = () => {
                         <div class="card-body">
                             <ul class="rank-list">
                                 <li><span>Rank</span><span>Circle Name</span><span>User Count</span></li>
-                                <li><span>01</span><span>CORP-MUM</span><span>8</span></li>
-                                <li><span>02</span><span>CORP-PUNE</span><span>6</span></li>
-                                <li><span>03</span><span>SNOC-HYD</span><span>5</span></li>
-                                <li><span>04</span><span>BANGLORE</span><span>5</span></li>
-                                <li><span>05</span><span>DELHI</span><span>4</span></li>
-                                <li><span>06</span><span>GUJ</span><span>4</span></li>
-                                <li><span>07</span><span>MPS</span><span>3</span></li>
+                                { functionRanking.map((item, index) => (
+                                    <li><span>{index+1}</span><span>{item.department_name}</span><span>{item.avg_steps}</span></li>
+                                ))
+                                
+                                }
                             </ul>
                         </div>
                     </div>
                     <div className="card-body bar-card">
                     <div className="bg-white shadow-md rounded-lg h-100">
                             <h2 className="text-lg font-semibold m-4 text-gray-700" style={{ fontSize: "16px" }}>
-                                Cluster Wise Average Steps
+                                Function Wise Average Steps
                             </h2>
-                            <ResponsiveContainer width="90%" height={400}>
+                            <ResponsiveContainer width="100%" height={400}>
                                 <BarChart
-                                    data={barChartData}
+                                    data={barChartData2}
                                     margin={{ top: 10, right: 30, left: 80, bottom: 30 }}
                                 >
                                     <CartesianGrid strokeDasharray="3 3" />
                                     <XAxis
-                                        dataKey="cluster"
+                                        dataKey="function"
                                         label={{
-                                            value: "Cluster",
+                                            value: "Function",
                                             position: "bottom",
                                             offset: 10,
                                             fontWeight: "bold",
@@ -272,7 +348,6 @@ const dashboard = () => {
                                 </BarChart>
                             </ResponsiveContainer>
                         </div>
-
                     </div>
 
                 </div>
@@ -288,13 +363,9 @@ const dashboard = () => {
                         <div class="card-body">
                             <ul class="rank-list">
                                 <li><span>Rank</span><span>Circle Name</span><span>User Count</span></li>
-                                <li><span>01</span><span>CORP-MUM</span><span>8</span></li>
-                                <li><span>02</span><span>CORP-PUNE</span><span>6</span></li>
-                                <li><span>03</span><span>SNOC-HYD</span><span>5</span></li>
-                                <li><span>04</span><span>BANGLORE</span><span>5</span></li>
-                                <li><span>05</span><span>DELHI</span><span>4</span></li>
-                                <li><span>06</span><span>GUJ</span><span>4</span></li>
-                                <li><span>07</span><span>MPS</span><span>3</span></li>
+                                { clusterRanking.map((item, index) => (
+                                    <li><span>{index+1}</span><span>{item.cluster_name}</span><span>{item.avg_steps}</span></li>
+                                ))}
                             </ul>
                         </div>
                     </div>
@@ -305,7 +376,7 @@ const dashboard = () => {
                             </h2>
                             <ResponsiveContainer width="90%" height={400}>
                                 <BarChart
-                                    data={barChartData}
+                                    data={barChartData1}
                                     margin={{ top: 10, right: 30, left: 80, bottom: 30 }}
                                 >
                                     <CartesianGrid strokeDasharray="3 3" />
@@ -321,6 +392,7 @@ const dashboard = () => {
                                     />
 
                                     <YAxis
+                                        dataKey="steps"
                                         label={{
                                             value: "Average Steps Taken",
                                             angle: -90,
