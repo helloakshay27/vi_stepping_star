@@ -4,8 +4,8 @@ import axios from 'axios';
 import { User } from "lucide-react"
 import { format } from "date-fns";
 import DatePicker from "react-datepicker";
-import { ArrowUp, Calendar, Download, Wallet,CircleUser } from "lucide-react";
-import Select , { components } from "react-select";
+import { ArrowUp, Calendar, Download, Wallet, CircleUser } from "lucide-react";
+import Select, { components } from "react-select";
 import Loader from "./Loader";
 import {
     BarChart,
@@ -28,57 +28,57 @@ const dashboard = () => {
 
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
-    const [names,setNames]=useState([]);
+    const [names, setNames] = useState([]);
     const [selectedId, setSelectedId] = useState([]);
 
-    const[stepCount,setStepCount]=useState(0);
-    const[gender,setGender]=useState(0);
+    const [stepCount, setStepCount] = useState(0);
+    const [gender, setGender] = useState(0);
     const [achieversCount, setAchieversCount] = useState([]);
-    const[functionRanking,setFunctionRanking]=useState([]);
-    const[clusterRanking,setClusterRanking]=useState([]);
-    const[circleRanking,setCircleRanking]=useState([]);
-  
-    const[loading,setLoading]=useState(false);
+    const [functionRanking, setFunctionRanking] = useState([]);
+    const [clusterRanking, setClusterRanking] = useState([]);
+    const [circleRanking, setCircleRanking] = useState([]);
+
+    const [loading, setLoading] = useState(false);
 
 
     const [pieChartData, setPieChartData] = useState([]);
 
-useEffect(() => {
-  if (gender) {
-    setPieChartData([
-      { name: "MALE", value: gender.male || 0 },
-      { name: "FEMALE", value: gender.female || 0 }
-    ]);
-  }
-}, [gender]);
+    useEffect(() => {
+        if (gender) {
+            setPieChartData([
+                { name: "MALE", value: gender.male || 0 },
+                { name: "FEMALE", value: gender.female || 0 }
+            ]);
+        }
+    }, [gender]);
 
 
-const [barChartData1, setBarChartData1] = useState([]);
-const [barChartData2, setBarChartData2] = useState([]);
+    const [barChartData1, setBarChartData1] = useState([]);
+    const [barChartData2, setBarChartData2] = useState([]);
 
-useEffect(() => {
-  if (clusterRanking?.length > 0) {
-    const formattedData = clusterRanking.map(item => ({
-      cluster: item.cluster_name,
-      steps: item.avg_steps
-    }));
-    setBarChartData1(formattedData);
-  }
-  if(functionRanking?.length>0){
-    const formattedData = functionRanking.map(item => ({
-      function: item.department_name,
-      steps: item.avg_steps
-    }));
-    console.log(formattedData);
-    setBarChartData2(formattedData);
-  }
-}, [clusterRanking,functionRanking]);
+    useEffect(() => {
+        if (clusterRanking?.length > 0) {
+            const formattedData = clusterRanking.map(item => ({
+                cluster: item.cluster_name,
+                steps: item.avg_steps
+            }));
+            setBarChartData1(formattedData);
+        }
+        if (functionRanking?.length > 0) {
+            const formattedData = functionRanking.map(item => ({
+                function: item.department_name,
+                steps: item.avg_steps
+            }));
+            console.log(formattedData);
+            setBarChartData2(formattedData);
+        }
+    }, [clusterRanking, functionRanking]);
 
 
     const COLORS = ["rgba(238, 11, 11, 1)", "rgba(255, 197, 0, 1)"];
 
-    const formatData=()=>{
-        console.log(startDate,endDate);
+    const formatData = () => {
+        console.log(startDate, endDate);
         const formattedStartDate = startDate ? startDate.toISOString().split("T")[0] : "";
         const formattedEndDate = endDate ? endDate.toISOString().split("T")[0] : "";
         const formattedId = selectedId.length > 0 ? selectedId.join(",") : "";
@@ -89,121 +89,121 @@ useEffect(() => {
 
     const updateData = async (formattedId, formattedStartDate, formattedEndDate) => {
         setLoading(true);
-      try {
-        const genderData = await axios.get(
-          `https://reports.lockated.com/api-fm/stepathon/get-gender-participation/?site_id=${formattedId}&from_date=${formattedStartDate}&to_date=${formattedEndDate}`
-        );
-        setGender(genderData.data.response1);
+        try {
+            const genderData = await axios.get(
+                `https://reports.lockated.com/api-fm/stepathon/get-gender-participation/?site_id=${formattedId}&from_date=${formattedStartDate}&to_date=${formattedEndDate}`
+            );
+            setGender(genderData.data.response1);
 
-        const achieversData = await axios.get(
-          `https://reports.lockated.com/api-fm/stepathon/circle-wise-20k-acheiver/?site_id=${formattedId}&from_date=${formattedStartDate}&to_date=${formattedEndDate}`
-        );
-        setAchieversCount(achieversData.data.data);
+            const achieversData = await axios.get(
+                `https://reports.lockated.com/api-fm/stepathon/circle-wise-20k-acheiver/?site_id=${formattedId}&from_date=${formattedStartDate}&to_date=${formattedEndDate}`
+            );
+            setAchieversCount(achieversData.data.data);
 
-        const functionRankingData = await axios.get(
-          `https://reports.lockated.com/api-fm/stepathon/function-leveling-ranking/?site_id=${formattedId}&from_date=${formattedStartDate}&to_date=${formattedEndDate}`
-        );
-        setFunctionRanking(functionRankingData.data.data);
+            const functionRankingData = await axios.get(
+                `https://reports.lockated.com/api-fm/stepathon/function-leveling-ranking/?site_id=${formattedId}&from_date=${formattedStartDate}&to_date=${formattedEndDate}`
+            );
+            setFunctionRanking(functionRankingData.data.data);
 
-        const clusterRankingData = await axios.get(
-          `https://reports.lockated.com/api-fm/stepathon/cluster-leveling-ranking/?site_id=${formattedId}&from_date=${formattedStartDate}&to_date=${formattedEndDate}`
-        );
-        setClusterRanking(clusterRankingData.data.data);
+            const clusterRankingData = await axios.get(
+                `https://reports.lockated.com/api-fm/stepathon/cluster-leveling-ranking/?site_id=${formattedId}&from_date=${formattedStartDate}&to_date=${formattedEndDate}`
+            );
+            setClusterRanking(clusterRankingData.data.data);
 
-        const circleRankingData = await axios.get(
-          `https://reports.lockated.com/api-fm/stepathon/circle-leveling-ranking/?site_id=${formattedId}&from_date=${formattedStartDate}&to_date=${formattedEndDate}`
-        );
-        setCircleRanking(circleRankingData.data.data);
+            const circleRankingData = await axios.get(
+                `https://reports.lockated.com/api-fm/stepathon/circle-leveling-ranking/?site_id=${formattedId}&from_date=${formattedStartDate}&to_date=${formattedEndDate}`
+            );
+            setCircleRanking(circleRankingData.data.data);
 
-        const stepCountData = await axios.get(
-          `https://reports.lockated.com/api-fm/stepathon/get-organisation-daily-step-count/?site_id=${formattedId}&from_date=${formattedStartDate}&to_date=${formattedEndDate}`
-        );
-        setStepCount(stepCountData.data.response);
+            const stepCountData = await axios.get(
+                `https://reports.lockated.com/api-fm/stepathon/get-organisation-daily-step-count/?site_id=${formattedId}&from_date=${formattedStartDate}&to_date=${formattedEndDate}`
+            );
+            setStepCount(stepCountData.data.response);
 
-      } catch (error) {
-        console.error("Error fetching data", error);
-      }finally{
-        setLoading(false);
-      }
+        } catch (error) {
+            console.error("Error fetching data", error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     useEffect(() => {
-        const fetchNames=async()=>{
-        const name=await axios.get("https://reports.lockated.com/api-fm/stepathon/vi-site-lists/");
-        setNames(name.data.data);
-        console.log(name);
+        const fetchNames = async () => {
+            const name = await axios.get("https://reports.lockated.com/api-fm/stepathon/vi-site-lists/");
+            setNames(name.data.data);
+            console.log(name);
         }
 
         fetchNames();
-    },[]);
+    }, []);
     useEffect(() => {
-       formatData();
-        
+        formatData();
+
     }, [selectedId]);
-    
+
     const handleChange = (selectedOptions) => {
         const ids = selectedOptions.map((option) => option.value);
         setSelectedId(ids);
         console.log(selectedId);
-      };
-      
-      const customStyles = {
-        control: (provided, state) => ({
-          ...provided,
+    };
 
-          maxWidth:"300px",
-    
+    const customStyles = {
+        control: (provided, state) => ({
+            ...provided,
+
+            maxWidth: "300px",
+
         }),
         valueContainer: (provided, state) => ({
-          ...provided,
-          height: '40px', // Set your desired fixed height here
-          overflowY: 'hidden',
-          overflowX: 'auto',
-          flexWrap: 'nowrap',
+            ...provided,
+            height: '40px', // Set your desired fixed height here
+            overflowY: 'hidden',
+            overflowX: 'auto',
+            flexWrap: 'nowrap',
         }),
         multiValue: (provided, state) => ({
-          ...provided,
-          // Ensure multivalues don't shrink too much if needed
-          flexShrink: 0,
+            ...provided,
+            // Ensure multivalues don't shrink too much if needed
+            flexShrink: 0,
         }),
         input: (provided, state) => ({
-          ...provided,
-          margin: '2px', // Adjust as needed
+            ...provided,
+            margin: '2px', // Adjust as needed
         }),
-            // ... include your existing styles for control, valueContainer etc. ...
-           
-            // ... multiValue, input styles ...
-          
-            menu: (provided, state) => ({
-              ...provided, // Base styles are crucial
-              maxHeight: '200px', // Or your desired max-height/height e.g., '150px'
-              backgroundColor: 'white', // Ensure solid white background
-              zIndex: 5000, // High z-index for stacking
-              // Check for any opacity being applied by provided or external CSS
-              // opacity: 1, // Explicitly set if needed, but usually not required
-              border: '1px solid #DDD', // Optional: adds definition
-              boxShadow: '0 4px 10px rgba(0,0,0,0.1)', // Optional: enhances visual separation
-            }),
-          
-            menuList: (provided, state) => ({
-              ...provided, // Base styles
-              // --- Add vertical scroll when content overflows ---
-              overflowY: 'auto',
-              // --- Ensure list respects menu's max-height ---
-              // maxHeight: '200px', // Explicitly set if needed, matching menu's maxHeight
-              // Or often just inheriting works if menu has maxHeight set:
-              maxHeight: 'inherit',
-              // Ensure background just in case (usually inherits from menu)
-              // backgroundColor: 'white',
-            }),
-          
-            // If using portals:
-            menuPortal: (provided) => ({
-              ...provided,
-              zIndex: 9999, // Ensure portal container is also high
-            }),
-          };
-      
+        // ... include your existing styles for control, valueContainer etc. ...
+
+        // ... multiValue, input styles ...
+
+        menu: (provided, state) => ({
+            ...provided, // Base styles are crucial
+            maxHeight: '200px', // Or your desired max-height/height e.g., '150px'
+            backgroundColor: 'white', // Ensure solid white background
+            zIndex: 5000, // High z-index for stacking
+            // Check for any opacity being applied by provided or external CSS
+            // opacity: 1, // Explicitly set if needed, but usually not required
+            border: '1px solid #DDD', // Optional: adds definition
+            boxShadow: '0 4px 10px rgba(0,0,0,0.1)', // Optional: enhances visual separation
+        }),
+
+        menuList: (provided, state) => ({
+            ...provided, // Base styles
+            // --- Add vertical scroll when content overflows ---
+            overflowY: 'auto',
+            // --- Ensure list respects menu's max-height ---
+            // maxHeight: '200px', // Explicitly set if needed, matching menu's maxHeight
+            // Or often just inheriting works if menu has maxHeight set:
+            maxHeight: 'inherit',
+            // Ensure background just in case (usually inherits from menu)
+            // backgroundColor: 'white',
+        }),
+
+        // If using portals:
+        menuPortal: (provided) => ({
+            ...provided,
+            zIndex: 9999, // Ensure portal container is also high
+        }),
+    };
+
 
     return (
         <div>
@@ -211,60 +211,60 @@ useEffect(() => {
                 <img alt="logo" src="logo.png" />
                 <div className="w-25 header-right">
 
-                <Select
-              isMulti // Enable multi-select
-              options={names.map((name) => ({ label: name.name, value: name.id }))}
-              onChange={handleChange}
-              placeholder="Select Categories..."
-              closeMenuOnSelect={false} // Keep menu open after selection for easier multi-select
-              hideSelectedOptions={true} // Keep selected options visible in the list
-              className="w-full "
-              styles={customStyles}
-              menuPortalTarget={typeof window !== 'undefined' ? document.body : null}
-              />
-                
-                <CircleUser className="user-icon" />
+                    <Select
+                        isMulti // Enable multi-select
+                        options={names.map((name) => ({ label: name.name, value: name.id }))}
+                        onChange={handleChange}
+                        placeholder="Select Categories..."
+                        closeMenuOnSelect={false} // Keep menu open after selection for easier multi-select
+                        hideSelectedOptions={true} // Keep selected options visible in the list
+                        className="w-full "
+                        styles={customStyles}
+                        menuPortalTarget={typeof window !== 'undefined' ? document.body : null}
+                    />
+
+                    <CircleUser className="user-icon" />
                 </div>
             </div>
             <div className="flex d-col gap-2 p-lg-3 p-md-2">
-                <div className="d-flex flex-row align-items-center justify-content-between p-1 " style={{height:"60px"}}>
-                    <span className="fw-medium fs-2 " style={{ color: "rgba(34, 43, 69, 1)" ,margin:"20px"}}>VI Stepping Stars Dashboard</span>
+                <div className="d-flex flex-row align-items-center justify-content-between p-1 " style={{ height: "60px" }}>
+                    <span className="fw-medium fs-2 " style={{ color: "rgba(34, 43, 69, 1)", margin: "20px" }}>VI Stepping Stars Dashboard</span>
                     <div className="d-flex align-items-center gap-2">
                         <div className="position-relative">
-                        <div style={{ display: "flex", flexDirection: "column" }}>
-        <label style={{ fontSize: "12px", color: "grey", textAlign: "left" }}>
-          Select Start Date
-        </label>
-                            <DatePicker
-                                selected={startDate}
-                                onChange={(date) => setStartDate(date)}
-                                selectsStart
-                                startDate={startDate}
-                                endDate={endDate}
-                                dateFormat="dd/MM/yyyy"
-                                className=" date-input "
-                            />
-                            <Calendar className="calendar-icon" />
+                            <div style={{ display: "flex", flexDirection: "column" }}>
+                                <label style={{ fontSize: "12px", color: "grey", textAlign: "left" }}>
+                                    Select Start Date
+                                </label>
+                                <DatePicker
+                                    selected={startDate}
+                                    onChange={(date) => setStartDate(date)}
+                                    selectsStart
+                                    startDate={startDate}
+                                    endDate={endDate}
+                                    dateFormat="dd/MM/yyyy"
+                                    className=" date-input "
+                                />
+                                <Calendar className="calendar-icon" />
                             </div>
                         </div>
-                        <span className="to" style={{marginTop:"15px"}}>TO</span>
+                        <span className="to" style={{ marginTop: "15px" }}>TO</span>
                         <div className="position-relative">
-                        <div style={{ display: "flex", flexDirection: "column" }}>
-        <label style={{ fontSize: "12px", color: "grey", textAlign: "left" }}>
-          Select End Date
-        </label>
-                            <DatePicker
-                                selected={endDate}
-                                onChange={(date) => setEndDate(date)}
-                                selectsEnd
-                                startDate={startDate}
-                                minDate={startDate}
-                                endDate={endDate}
-                                dateFormat="dd/MM/yyyy"
-                                className="date-input "
-                            />
-                            <Calendar className="calendar-icon" />
-                        </div>
+                            <div style={{ display: "flex", flexDirection: "column" }}>
+                                <label style={{ fontSize: "12px", color: "grey", textAlign: "left" }}>
+                                    Select End Date
+                                </label>
+                                <DatePicker
+                                    selected={endDate}
+                                    onChange={(date) => setEndDate(date)}
+                                    selectsEnd
+                                    startDate={startDate}
+                                    minDate={startDate}
+                                    endDate={endDate}
+                                    dateFormat="dd/MM/yyyy"
+                                    className="date-input "
+                                />
+                                <Calendar className="calendar-icon" />
+                            </div>
                         </div>
                         <button className="btn-red" onClick={formatData} >
                             Apply
@@ -272,18 +272,18 @@ useEffect(() => {
                     </div>
                 </div>
                 <div className='heading'>
-                    <p>Gender statistic and leaderboard</p>
+                    <p>Gender Statistics And Leaderboard</p>
                 </div>
                 <div class="dashboard-grid-1">
 
                     <div class="card gender-card">
                         <div class="card-header">
-                            <h3>Gender Participants</h3>
+                            <h3>Gender-wise Participants</h3>
                             <span className="icon"><Download /></span>
 
                         </div>
                         <div class="card-body">
-                            <div style={{height:"100%"}}>
+                            <div style={{ height: "100%" }}>
 
                                 <ResponsiveContainer width="100%" height={200}>
                                     <PieChart >
@@ -330,10 +330,10 @@ useEffect(() => {
 
 
 
-                            <div class="legend">
-                                <span style={{marginRight:"45px"}}  ><span class="color-dot red"></span> Male</span>
-                                <span><span class="color-dot yellow"></span> Female</span>
-                            </div>
+                                <div class="legend">
+                                    <span style={{ marginRight: "45px" }}  ><span class="color-dot red"></span> Male</span>
+                                    <span><span class="color-dot yellow"></span> Female</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -344,13 +344,13 @@ useEffect(() => {
                                 <div class="step-icon">
                                     <img src="famicons_footsteps.png" />
                                 </div>
-                                <div class="step-value">{stepCount?stepCount:0}</div>
+                                <div class="step-value">{stepCount ? stepCount : 0}</div>
                             </div>
                             <div>
                                 <span className="icon"><Download /></span>
                             </div>
                         </div>
-                        <div ><p style={{ marginTop: "55px", fontWeight: "500" }}>Organization Daily Step Count</p></div>
+                        <div ><p style={{ marginTop: "55px", fontWeight: "500" }}>An Organisation's Daily Step Count</p></div>
                     </div>
 
                     <div class="card achievers-card">
@@ -362,10 +362,10 @@ useEffect(() => {
                         <div class="card-body">
                             <ul class="rank-list">
                                 <li><span>Rank</span><span>Circle Name</span><span>User Count</span></li>
-                               { achieversCount.map((item, index) => (
-                                    <li><span>{index+1}</span><span>{item.circle_name}</span><span>{item.users_with_20k_steps}</span></li>
+                                {achieversCount.map((item, index) => (
+                                    <li><span>{index + 1}</span><span>{item.circle_name}</span><span>{item.users_with_20k_steps}</span></li>
                                 ))
-                                
+
                                 }
 
                             </ul>
@@ -381,10 +381,10 @@ useEffect(() => {
                         <div class="card-body">
                             <ul class="rank-list">
                                 <li><span>Rank</span><span>Circle Name</span><span>Avg steps</span></li>
-                                { circleRanking.map((item, index) => (
-                                    <li><span>{index+1}</span><span>{item.circle_name}</span><span>{item.avg_steps}</span></li>
+                                {circleRanking.map((item, index) => (
+                                    <li><span>{index + 1}</span><span>{item.circle_name}</span><span>{item.avg_steps}</span></li>
                                 ))
-                                
+
                                 }
                             </ul>
                         </div>
@@ -392,29 +392,29 @@ useEffect(() => {
 
                 </div>
 
-                <div className='heading' style={{backgroundColor:"rgb(255, 255, 255)"}}>
-                    <p>Function statistics</p>
+                <div className='heading' style={{ backgroundColor: "rgb(255, 255, 255)" }}>
+                    <p>Function Statistics</p>
                 </div>
                 <div className='dashboard-grid-2'>
                     <div class="card function-ranking-card">
                         <div class="card-header">
-                            <h3>Top 10 Function level Ranking</h3>
+                            <h3>Top 10 Function Level Ranking</h3>
                             <span className="icon"><Download /></span>
 
                         </div>
                         <div class="card-body">
                             <ul class="rank-list">
-                                <li><span>Rank</span><span>Circle Name</span><span>User Count</span></li>
-                                { functionRanking.map((item, index) => (
-                                    <li><span>{index+1}</span><span>{item.department_name}</span><span>{item.avg_steps}</span></li>
+                                <li><span>Rank</span><span>Functions </span><span>Avg Steps</span></li>
+                                {functionRanking.map((item, index) => (
+                                    <li><span>{index + 1}</span><span>{item.department_name}</span><span>{item.avg_steps}</span></li>
                                 ))
-                                
+
                                 }
                             </ul>
                         </div>
                     </div>
                     <div className="card-body bar-card">
-                    <div className="bg-white shadow-md rounded-lg h-100 card">
+                        <div className="bg-white shadow-md rounded-lg h-100 card">
                             <h2 className="text-lg font-semibold m-4 text-gray-700" style={{ fontSize: "16px" }}>
                                 Function Wise Average Steps
                             </h2>
@@ -441,7 +441,7 @@ useEffect(() => {
                                             angle: -90,
                                             position: "insideCentre",
                                             dx: -50,
-                                            dy: 10, 
+                                            dy: 10,
                                             style: {
                                                 fontWeight: "bold",
                                                 fill: "#333",
@@ -459,19 +459,19 @@ useEffect(() => {
 
                 </div>
                 <div className="heading" >
-                    <p >Cluster statistics</p>
+                    <p > Cluster Statistics</p>
                 </div>
                 <div className='dashboard-grid-2'>
                     <div class="card function-ranking-card">
                         <div class="card-header">
-                            <h3>Top 10 Cluster level Ranking</h3>
+                            <h3>Top 10 Cluster Level Ranking</h3>
                             <span className="icon"><Download /></span>
                         </div>
                         <div class="card-body">
                             <ul class="rank-list">
-                                <li><span>Rank</span><span>Circle Name</span><span>User Count</span></li>
-                                { clusterRanking.map((item, index) => (
-                                    <li><span>{index+1}</span><span>{item.cluster_name}</span><span>{item.avg_steps}</span></li>
+                                <li><span>Rank</span><span>Cluster</span><span>Avg Steps</span></li>
+                                {clusterRanking.map((item, index) => (
+                                    <li><span>{index + 1}</span><span>{item.cluster_name}</span><span>{item.avg_steps}</span></li>
                                 ))}
                             </ul>
                         </div>
@@ -529,7 +529,7 @@ useEffect(() => {
                 </div>
 
             </div>
-            {loading? <Loader isLoading={loading} />: null};
+            {loading ? <Loader isLoading={loading} /> : null};
         </div>
     )
 }
