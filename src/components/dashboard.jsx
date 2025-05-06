@@ -7,6 +7,7 @@ import DatePicker from "react-datepicker";
 import { ArrowUp, Calendar, Download, Wallet,CircleUser } from "lucide-react";
 import Select , { components } from "react-select";
 import Loader from "./Loader";
+import * as XLSX from 'xlsx';
 import {
     BarChart,
     Bar,
@@ -77,6 +78,108 @@ useEffect(() => {
 
     const COLORS = ["rgba(238, 11, 11, 1)", "rgba(255, 197, 0, 1)"];
 
+     
+    const genderwiseToExcel=()=>{
+         const genderData = pieChartData.map((item, index) => ({
+            Gender: item.name,
+            'User Count': item.value
+         }));
+
+          const worksheet = XLSX.utils.json_to_sheet(genderData);
+          worksheet['!cols'] = [
+            { wch: Math.max(...genderData.map(d => d["Gender"].length), 10) + 2 },
+            { wch: 12 },
+          ];
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Gender');
+
+  // Trigger download
+  XLSX.writeFile(workbook, 'GenderList.xlsx')
+    }
+
+     const kAchieversToExcel = () => {
+        const achieversData = achieversCount.map((item, index) => ({
+            Rank: index + 1,
+            'Circle Name': item.circle_name,
+            'User Count': item.users_with_20k_steps
+          }));
+
+          const worksheet = XLSX.utils.json_to_sheet(achieversData);
+          worksheet['!cols'] = [
+            { wch: 6 }, // Rank
+            { wch: Math.max(...achieversData.map(d => d["Circle Name"].length), 10) + 2 }, // Circle Name
+            { wch: 12 }, // Avg Steps
+          ];
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Achievers');
+
+  // Trigger download
+  XLSX.writeFile(workbook, 'AchieversList.xlsx')
+         
+     }
+     
+     const top10CircleToExcel = () => {
+        const circleData = circleRanking.map((item, index) => ({
+            Rank: index + 1,
+            'Circle Name': item.circle_name,
+            'Avg Steps': item.avg_steps
+          }));
+
+          const worksheet = XLSX.utils.json_to_sheet(circleData);
+
+          worksheet['!cols'] = [
+            { wch: 6 }, // Rank
+            { wch: Math.max(...circleData.map(d => d["Circle Name"].length), 10) + 2 }, // Circle Name
+            { wch: 12 }, // Avg Steps
+          ];
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'CircleRanking');
+
+  // Trigger download
+  XLSX.writeFile(workbook, 'CircleRanking.xlsx')
+     }
+
+     const top10FunctionToExcel = () => {
+        const functionData = functionRanking.map((item, index) => ({
+            Rank: index + 1,
+            'Functions': item.department_name,
+            'Avg Steps': item.avg_steps
+          }));
+
+          const worksheet = XLSX.utils.json_to_sheet(functionData);
+          worksheet['!cols'] = [
+            { wch: 6 }, 
+            { wch: Math.max(...functionData.map(d => d["Functions"].length), 10) + 2 }, 
+            { wch: 12 }, 
+          ];
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'FunctionRanking');
+
+  // Trigger download
+  XLSX.writeFile(workbook, 'FunctionRanking.xlsx')
+     }
+
+     const top10clusterToExcel = () => {
+        const clusterData = clusterRanking.map((item, index) => ({
+            Rank: index + 1,
+            'Cluster': item.cluster_name,
+            'Avg Steps': item.avg_steps
+          }));
+
+          const worksheet = XLSX.utils.json_to_sheet(clusterData);
+          worksheet['!cols'] = [
+            { wch: 6 }, // Rank
+            { wch: Math.max(...clusterData.map(d => d["Cluster"].length), 10) + 2 }, // Circle Name
+            { wch: 12 }, // Avg Steps
+          ];
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'ClusterRanking');
+
+  // Trigger download
+  XLSX.writeFile(workbook, 'ClusterRanking.xlsx')
+     }
+
+      
     const formatData=()=>{
         console.log(startDate,endDate);
         const formattedStartDate = startDate ? startDate.toISOString().split("T")[0] : "";
@@ -227,8 +330,8 @@ useEffect(() => {
                 </div>
             </div>
             <div className="flex d-col gap-2 p-lg-3 p-md-2">
-                <div className="d-flex flex-row align-items-center justify-content-between p-1 " style={{height:"60px"}}>
-                    <span className="fw-medium fs-2 " style={{ color: "rgba(34, 43, 69, 1)" ,margin:"20px"}}>VI Stepping Stars Dashboard</span>
+                <div className="d-flex flex-row align-items-center justify-content-between " style={{height:"60px" ,padding:"10px 60px"}}>
+                    <span className="fw-medium fs-2 " style={{ color: "rgba(34, 43, 69, 1)" ,margin:"20px"}}>Vi Stepping Stars</span>
                     <div className="d-flex align-items-center gap-2">
                         <div className="position-relative">
                         <div style={{ display: "flex", flexDirection: "column" }}>
@@ -271,15 +374,13 @@ useEffect(() => {
                         </button>
                     </div>
                 </div>
-                <div className='heading'>
-                    <p>Gender statistic and leaderboard</p>
-                </div>
+                <div className="heading"></div>
                 <div class="dashboard-grid-1">
-
+                      
                     <div class="card gender-card">
                         <div class="card-header">
-                            <h3>Gender Participants</h3>
-                            <span className="icon"><Download /></span>
+                            <h3>Gender-wise Participants</h3>
+                            <span className="icon" onClick={genderwiseToExcel}><Download /></span>
 
                         </div>
                         <div class="card-body">
@@ -347,16 +448,17 @@ useEffect(() => {
                                 <div class="step-value">{stepCount?stepCount:0}</div>
                             </div>
                             <div>
-                                <span className="icon"><Download /></span>
+                            <span className="icon"><Download style={{color:"#888"}}/></span>
+
                             </div>
                         </div>
-                        <div ><p style={{ marginTop: "55px", fontWeight: "500" }}>Organization Daily Step Count</p></div>
+                        <div ><p style={{ marginTop: "55px", fontWeight: "500" }}>An Organisation's Daily Step Count</p></div>
                     </div>
 
                     <div class="card achievers-card">
                         <div class="card-header">
                             <h3>20K Steps Achievers Count</h3>
-                            <span className="icon"><Download /></span>
+                            <span className="icon" onClick={kAchieversToExcel}><Download /></span>
 
                         </div>
                         <div class="card-body">
@@ -375,7 +477,7 @@ useEffect(() => {
                     <div class="card ranking-card">
                         <div class="card-header">
                             <h3>Top 10 Circle Level Ranking</h3>
-                            <span className="icon"><Download /></span>
+                            <span className="icon" onClick={top10CircleToExcel}><Download /></span>
 
                         </div>
                         <div class="card-body">
@@ -393,18 +495,18 @@ useEffect(() => {
                 </div>
 
                 <div className='heading' style={{backgroundColor:"rgb(255, 255, 255)"}}>
-                    <p>Function statistics</p>
+                    <p>Function Statistics</p>
                 </div>
                 <div className='dashboard-grid-2'>
                     <div class="card function-ranking-card">
                         <div class="card-header">
-                            <h3>Top 10 Function level Ranking</h3>
-                            <span className="icon"><Download /></span>
+                            <h3>Top 10 Function Level Ranking</h3>
+                            <span className="icon" onClick={top10FunctionToExcel}><Download /></span>
 
                         </div>
                         <div class="card-body">
                             <ul class="rank-list">
-                                <li><span>Rank</span><span>Circle Name</span><span>User Count</span></li>
+                                <li><span>Rank</span><span>Functions</span><span>Avg Steps</span></li>
                                 { functionRanking.map((item, index) => (
                                     <li><span>{index+1}</span><span>{item.department_name}</span><span>{item.avg_steps}</span></li>
                                 ))
@@ -418,7 +520,7 @@ useEffect(() => {
                             <h2 className="text-lg font-semibold m-4 text-gray-700" style={{ fontSize: "16px" }}>
                                 Function Wise Average Steps
                             </h2>
-                            <ResponsiveContainer width="100%" height={400}>
+                            <ResponsiveContainer width="100%" height={450}>
                                 <BarChart
                                     data={barChartData2}
                                     margin={{ top: 10, right: 30, left: 80, bottom: 30 }}
@@ -433,6 +535,12 @@ useEffect(() => {
                                             fontWeight: "bold",
                                             fill: "#333"
                                         }}
+                                        angle={-45} 
+                                        textAnchor="end" 
+                                        interval={0}
+                                        height={60}
+                                        dy={10}
+                                        style={{ fontSize: "12px" }}
                                     />
 
                                     <YAxis
@@ -459,17 +567,17 @@ useEffect(() => {
 
                 </div>
                 <div className="heading" >
-                    <p >Cluster statistics</p>
+                    <p >Cluster Statistics</p>
                 </div>
                 <div className='dashboard-grid-2'>
                     <div class="card function-ranking-card">
                         <div class="card-header">
-                            <h3>Top 10 Cluster level Ranking</h3>
-                            <span className="icon"><Download /></span>
+                            <h3>Top 10 Cluster Level Ranking</h3>
+                            <span className="icon" onClick={top10clusterToExcel}><Download /></span>
                         </div>
                         <div class="card-body">
                             <ul class="rank-list">
-                                <li><span>Rank</span><span>Circle Name</span><span>User Count</span></li>
+                                <li><span>Rank</span><span>Cluster</span><span>Avg Steps</span></li>
                                 { clusterRanking.map((item, index) => (
                                     <li><span>{index+1}</span><span>{item.cluster_name}</span><span>{item.avg_steps}</span></li>
                                 ))}
