@@ -1,11 +1,9 @@
 import "react-datepicker/dist/react-datepicker.css";
 import React, { useState, useEffect } from 'react'
 import axios from 'axios';
-import { User } from "lucide-react"
-import { format } from "date-fns";
 import DatePicker from "react-datepicker";
-import { ArrowUp, Calendar, Download, Wallet, CircleUser } from "lucide-react";
-import Select, { components } from "react-select";
+import { Calendar, Download,CircleUser } from "lucide-react";
+import Select from "react-select";
 import Loader from "./Loader";
 import * as XLSX from 'xlsx';
 import {
@@ -15,7 +13,6 @@ import {
     YAxis,
     CartesianGrid,
     Tooltip,
-    Legend,
     PieChart,
     Pie,
     Cell,
@@ -78,110 +75,110 @@ const dashboard = () => {
 
     const COLORS = ["rgba(238, 11, 11, 1)", "rgba(255, 197, 0, 1)"];
 
-     
-    const genderwiseToExcel=()=>{
-         const genderData = pieChartData.map((item, index) => ({
+
+    const genderwiseToExcel = () => {
+        const genderData = pieChartData.map((item, index) => ({
             Gender: item.name,
             'User Count': item.value
-         }));
+        }));
 
-          const worksheet = XLSX.utils.json_to_sheet(genderData);
-          worksheet['!cols'] = [
+        const worksheet = XLSX.utils.json_to_sheet(genderData);
+        worksheet['!cols'] = [
             { wch: Math.max(...genderData.map(d => d["Gender"].length), 10) + 2 },
             { wch: 12 },
-          ];
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Gender');
+        ];
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Gender');
 
-  // Trigger download
-  XLSX.writeFile(workbook, 'GenderList.xlsx')
+        // Trigger download
+        XLSX.writeFile(workbook, 'GenderList.xlsx')
     }
 
-     const kAchieversToExcel = () => {
+    const kAchieversToExcel = () => {
         const achieversData = achieversCount.map((item, index) => ({
             Rank: index + 1,
             'Circle Name': item.circle_name,
             'User Count': item.users_with_20k_steps
-          }));
+        }));
 
-          const worksheet = XLSX.utils.json_to_sheet(achieversData);
-          worksheet['!cols'] = [
+        const worksheet = XLSX.utils.json_to_sheet(achieversData);
+        worksheet['!cols'] = [
             { wch: 6 }, // Rank
             { wch: Math.max(...achieversData.map(d => d["Circle Name"].length), 10) + 2 }, // Circle Name
             { wch: 12 }, // Avg Steps
-          ];
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Achievers');
+        ];
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Achievers');
 
-  // Trigger download
-  XLSX.writeFile(workbook, 'AchieversList.xlsx')
-         
-     }
-     
-     const top10CircleToExcel = () => {
+        // Trigger download
+        XLSX.writeFile(workbook, 'AchieversList.xlsx')
+
+    }
+
+    const top10CircleToExcel = () => {
         const circleData = circleRanking.map((item, index) => ({
             Rank: index + 1,
             'Circle Name': item.circle_name,
             'Avg Steps': item.avg_steps
-          }));
+        }));
 
-          const worksheet = XLSX.utils.json_to_sheet(circleData);
+        const worksheet = XLSX.utils.json_to_sheet(circleData);
 
-          worksheet['!cols'] = [
+        worksheet['!cols'] = [
             { wch: 6 }, // Rank
             { wch: Math.max(...circleData.map(d => d["Circle Name"].length), 10) + 2 }, // Circle Name
             { wch: 12 }, // Avg Steps
-          ];
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'CircleRanking');
+        ];
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'CircleRanking');
 
-  // Trigger download
-  XLSX.writeFile(workbook, 'CircleRanking.xlsx')
-     }
+        // Trigger download
+        XLSX.writeFile(workbook, 'CircleRanking.xlsx')
+    }
 
-     const top10FunctionToExcel = () => {
+    const top10FunctionToExcel = () => {
         const functionData = functionRanking.map((item, index) => ({
             Rank: index + 1,
             'Functions': item.department_name,
             'Avg Steps': item.avg_steps
-          }));
+        }));
 
-          const worksheet = XLSX.utils.json_to_sheet(functionData);
-          worksheet['!cols'] = [
-            { wch: 6 }, 
-            { wch: Math.max(...functionData.map(d => d["Functions"].length), 10) + 2 }, 
-            { wch: 12 }, 
-          ];
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'FunctionRanking');
+        const worksheet = XLSX.utils.json_to_sheet(functionData);
+        worksheet['!cols'] = [
+            { wch: 6 },
+            { wch: Math.max(...functionData.map(d => d["Functions"].length), 10) + 2 },
+            { wch: 12 },
+        ];
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'FunctionRanking');
 
-  // Trigger download
-  XLSX.writeFile(workbook, 'FunctionRanking.xlsx')
-     }
+        // Trigger download
+        XLSX.writeFile(workbook, 'FunctionRanking.xlsx')
+    }
 
-     const top10clusterToExcel = () => {
+    const top10clusterToExcel = () => {
         const clusterData = clusterRanking.map((item, index) => ({
             Rank: index + 1,
             'Cluster': item.cluster_name,
             'Avg Steps': item.avg_steps
-          }));
+        }));
 
-          const worksheet = XLSX.utils.json_to_sheet(clusterData);
-          worksheet['!cols'] = [
+        const worksheet = XLSX.utils.json_to_sheet(clusterData);
+        worksheet['!cols'] = [
             { wch: 6 }, // Rank
             { wch: Math.max(...clusterData.map(d => d["Cluster"].length), 10) + 2 }, // Circle Name
             { wch: 12 }, // Avg Steps
-          ];
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'ClusterRanking');
+        ];
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'ClusterRanking');
 
-  // Trigger download
-  XLSX.writeFile(workbook, 'ClusterRanking.xlsx')
-     }
+        // Trigger download
+        XLSX.writeFile(workbook, 'ClusterRanking.xlsx')
+    }
 
-      
-    const formatData=()=>{
-        console.log(startDate,endDate);
+
+    const formatData = () => {
+        console.log(startDate, endDate);
         const formattedStartDate = startDate ? startDate.toISOString().split("T")[0] : "";
         const formattedEndDate = endDate ? endDate.toISOString().split("T")[0] : "";
         const formattedId = selectedId.length > 0 ? selectedId.join(",") : "";
@@ -330,8 +327,8 @@ const dashboard = () => {
                 </div>
             </div>
             <div className="flex d-col gap-2 p-lg-3 p-md-2">
-                <div className="d-flex flex-row align-items-center justify-content-between " style={{height:"60px" ,padding:"10px 60px"}}>
-                    <span className="fw-medium fs-2 " style={{ color: "rgba(34, 43, 69, 1)" ,margin:"20px"}}>Vi Stepping Stars</span>
+                <div className="d-flex flex-row align-items-center justify-content-between " style={{ height: "60px", padding: "10px 60px" }}>
+                    <span className="fw-medium fs-2 " style={{ color: "rgba(34, 43, 69, 1)", margin: "20px" }}>Vi Stepping Stars</span>
                     <div className="d-flex align-items-center gap-2">
                         <div className="position-relative">
                             <div style={{ display: "flex", flexDirection: "column" }}>
@@ -376,7 +373,7 @@ const dashboard = () => {
                 </div>
                 <div className="heading"></div>
                 <div class="dashboard-grid-1">
-                      
+
                     <div class="card gender-card">
                         <div class="card-header">
                             <h3>Gender-wise Participants</h3>
@@ -448,7 +445,7 @@ const dashboard = () => {
                                 <div class="step-value">{stepCount ? stepCount : 0}</div>
                             </div>
                             <div>
-                            <span className="icon"><Download style={{color:"#888"}}/></span>
+                                <span className="icon"><Download style={{ color: "#888" }} /></span>
 
                             </div>
                         </div>
@@ -494,7 +491,7 @@ const dashboard = () => {
 
                 </div>
 
-                <div className='heading' style={{backgroundColor:"rgb(255, 255, 255)"}}>
+                <div className='heading' style={{ backgroundColor: "rgb(255, 255, 255)" }}>
                     <p>Function Statistics</p>
                 </div>
                 <div className='dashboard-grid-2'>
@@ -507,8 +504,8 @@ const dashboard = () => {
                         <div class="card-body">
                             <ul class="rank-list">
                                 <li><span>Rank</span><span>Functions</span><span>Avg Steps</span></li>
-                                { functionRanking.map((item, index) => (
-                                    <li><span>{index+1}</span><span>{item.department_name}</span><span>{item.avg_steps}</span></li>
+                                {functionRanking.map((item, index) => (
+                                    <li><span>{index + 1}</span><span>{item.department_name}</span><span>{item.avg_steps}</span></li>
                                 ))
 
                                 }
@@ -535,8 +532,8 @@ const dashboard = () => {
                                             fontWeight: "bold",
                                             fill: "#333"
                                         }}
-                                        angle={-45} 
-                                        textAnchor="end" 
+                                        angle={-45}
+                                        textAnchor="end"
                                         interval={0}
                                         height={60}
                                         dy={10}
@@ -578,8 +575,8 @@ const dashboard = () => {
                         <div class="card-body">
                             <ul class="rank-list">
                                 <li><span>Rank</span><span>Cluster</span><span>Avg Steps</span></li>
-                                { clusterRanking.map((item, index) => (
-                                    <li><span>{index+1}</span><span>{item.cluster_name}</span><span>{item.avg_steps}</span></li>
+                                {clusterRanking.map((item, index) => (
+                                    <li><span>{index + 1}</span><span>{item.cluster_name}</span><span>{item.avg_steps}</span></li>
                                 ))}
                             </ul>
                         </div>
