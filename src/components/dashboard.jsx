@@ -354,7 +354,7 @@ const dashboard = () => {
                         formatOptionLabel={({label,value})=>{
                               if(value==='*'){
                                 return(
-                                    <div style={{fontWeight:"bold",color:"red"}}>
+                                    <div style={{fontWeight:"500",color:"red"}}>
                                         {label}
                                     </div>
                                 )
