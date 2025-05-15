@@ -2,7 +2,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import React, { useState, useEffect } from 'react'
 import axios from 'axios';
 import DatePicker from "react-datepicker";
-import { Calendar, Download,CircleUser } from "lucide-react";
+import { Calendar, Download,CircleUser, Settings, LogOut } from "lucide-react";
 import Select from "react-select";
 import Loader from "./Loader";
 import * as XLSX from 'xlsx';
@@ -18,6 +18,7 @@ import {
     Cell,
     ResponsiveContainer,
 } from 'recharts';
+import { se } from "date-fns/locale";
 
 
 
@@ -39,7 +40,14 @@ const dashboard = () => {
     const [loading, setLoading] = useState(false);
 
 
+
     const [pieChartData, setPieChartData] = useState([]);
+    const [showUserModal, setShowUserModal] = useState(false);
+    const Startdatepickref = React.useRef(null);
+    const Enddatepickref = React.useRef(null);
+    const [options,setOptions]= useState([]);
+    
+
 
     useEffect(() => {
         if (gender) {
@@ -76,6 +84,10 @@ const dashboard = () => {
     const COLORS = ["rgba(238, 11, 11, 1)", "rgba(255, 197, 0, 1)"];
 
 
+    
+    const handleDropDown=()=>{
+        setShowUserModal(!showUserModal);
+    }
     const genderwiseToExcel = () => {
         const genderData = pieChartData.map((item, index) => ({
             Gender: item.name,
@@ -229,10 +241,22 @@ const dashboard = () => {
 
     useEffect(() => {
         const fetchNames = async () => {
-            const name = await axios.get("https://reports.lockated.com/api-fm/stepathon/vi-site-lists/");
-            setNames(name.data.data);
-            console.log(name);
-        }
+    try {
+        const response = await axios.get("https://reports.lockated.com/api-fm/stepathon/vi-site-lists/");
+        const data = response.data.data; // assuming this is an array
+
+        const formattedNames = data.map((item) => ({
+            label: item.name,
+            value: item.id,
+        }));
+        setNames(formattedNames);
+        setOptions([{ label: "Select All", value: "*" }, ...formattedNames]);
+        console.log(options);
+    } catch (error) {
+        console.error("Failed to fetch names:", error);
+    }
+};
+
 
         fetchNames();
     }, []);
@@ -242,8 +266,14 @@ const dashboard = () => {
     }, [selectedId]);
 
     const handleChange = (selectedOptions) => {
-        const ids = selectedOptions.map((option) => option.value);
-        setSelectedId(ids);
+        const checkAll=selectedOptions.find((option) => option.value === "*");
+        if(checkAll){
+            setSelectedId(names.map((name) => name.value));
+        }
+        else{
+            setSelectedId(selectedOptions.map((option) => option.value));
+        }
+        
         console.log(selectedId);
     };
 
@@ -312,18 +342,39 @@ const dashboard = () => {
                 <div className="w-25 header-right">
 
                     <Select
-                        isMulti // Enable multi-select
-                        options={names.map((name) => ({ label: name.name, value: name.id }))}
+                        isMulti
+                        options={options}
                         onChange={handleChange}
                         placeholder="Select Categories..."
-                        closeMenuOnSelect={false} // Keep menu open after selection for easier multi-select
-                        hideSelectedOptions={true} // Keep selected options visible in the list
+                        closeMenuOnSelect={false} 
+                        hideSelectedOptions={true} 
                         className="w-full "
                         styles={customStyles}
                         menuPortalTarget={typeof window !== 'undefined' ? document.body : null}
+                        formatOptionLabel={({label,value})=>{
+                              if(value==='*'){
+                                return(
+                                    <div style={{fontWeight:"bold",color:"red"}}>
+                                        {label}
+                                    </div>
+                                )
+                              }
+                              return (
+                                <span>{label}</span>
+                              )
+                        }}
                     />
 
-                    <CircleUser className="user-icon" />
+                    <CircleUser className="user-icon" onClick={handleDropDown}/>
+                    {
+                        showUserModal && (
+                            <div className="dropdown">
+                                <span><CircleUser size={24} style={{display:"inline"}}/><p style={{display:"inline"}}>My Profile</p></span>
+                               <span><Settings size={24}/><p>Account Settings</p> </span>
+                               <span><LogOut size={24}/><p>SignOut</p></span>
+                             </div>   
+                        )
+                    }
                 </div>
             </div>
             <div className="flex d-col gap-2 p-lg-3 p-md-2">
@@ -336,6 +387,7 @@ const dashboard = () => {
                                     Select Start Date
                                 </label>
                                 <DatePicker
+                                    ref={Startdatepickref}
                                     selected={startDate}
                                     onChange={(date) => setStartDate(date)}
                                     selectsStart
@@ -344,7 +396,7 @@ const dashboard = () => {
                                     dateFormat="dd/MM/yyyy"
                                     className=" date-input "
                                 />
-                                <Calendar className="calendar-icon" />
+                                <Calendar className="calendar-icon" onClick={() => Startdatepickref.current?.setOpen(true)} />
                             </div>
                         </div>
                         <span className="to" style={{ marginTop: "15px" }}>TO</span>
@@ -354,6 +406,7 @@ const dashboard = () => {
                                     Select End Date
                                 </label>
                                 <DatePicker
+                                    ref={Enddatepickref}
                                     selected={endDate}
                                     onChange={(date) => setEndDate(date)}
                                     selectsEnd
@@ -362,8 +415,9 @@ const dashboard = () => {
                                     endDate={endDate}
                                     dateFormat="dd/MM/yyyy"
                                     className="date-input "
-                                />
-                                <Calendar className="calendar-icon" />
+                                >
+                                </DatePicker>
+                                <Calendar className="calendar-icon" onClick={() => Enddatepickref.current?.setOpen(true)} />
                             </div>
                         </div>
                         <button className="btn-red" onClick={formatData} >
@@ -462,7 +516,7 @@ const dashboard = () => {
                             <ul class="rank-list">
                                 <li><span>Rank</span><span>Circle Name</span><span>User Count</span></li>
                                 {achieversCount.map((item, index) => (
-                                    <li><span>{index + 1}</span><span>{item.circle_name}</span><span>{item.users_with_20k_steps}</span></li>
+                                    <li><span>{index + 1}</span><span>{item.circle_name}</span><span>{item.users_with_20k_steps>=10?item.users_with_20k_steps:`${0}${item.users_with_20k_steps}`}</span></li>
                                 ))
 
                                 }
@@ -481,7 +535,7 @@ const dashboard = () => {
                             <ul class="rank-list">
                                 <li><span>Rank</span><span>Circle Name</span><span>Avg steps</span></li>
                                 {circleRanking.map((item, index) => (
-                                    <li><span>{index + 1}</span><span>{item.circle_name}</span><span>{item.avg_steps}</span></li>
+                                    <li><span>{index + 1}</span><span>{item.circle_name}</span><span>{item.avg_steps>=10?item.avg_steps:`${0}${item.avg_steps}`}</span></li>
                                 ))
 
                                 }
@@ -505,7 +559,7 @@ const dashboard = () => {
                             <ul class="rank-list">
                                 <li><span>Rank</span><span>Functions</span><span>Avg Steps</span></li>
                                 {functionRanking.map((item, index) => (
-                                    <li><span>{index + 1}</span><span>{item.department_name}</span><span>{item.avg_steps}</span></li>
+                                    <li><span>{index + 1}</span><span>{item.department_name}</span><span>{item.avg_steps>=10?item.avg_steps:`${0}${item.avg_steps}`}</span></li>
                                 ))
 
                                 }
@@ -541,12 +595,14 @@ const dashboard = () => {
                                     />
 
                                     <YAxis
+                                    domain={[0,20000]}
                                         label={{
                                             value: "Average Steps Taken",
                                             angle: -90,
                                             position: "insideCentre",
                                             dx: -50,
                                             dy: 10,
+
                                             style: {
                                                 fontWeight: "bold",
                                                 fill: "#333",
@@ -576,7 +632,7 @@ const dashboard = () => {
                             <ul class="rank-list">
                                 <li><span>Rank</span><span>Cluster</span><span>Avg Steps</span></li>
                                 {clusterRanking.map((item, index) => (
-                                    <li><span>{index + 1}</span><span>{item.cluster_name}</span><span>{item.avg_steps}</span></li>
+                                    <li><span>{index + 1}</span><span>{item.cluster_name}</span><span>{item.avg_steps>=10?item.avg_steps:`${0}${item.avg_steps}`}</span></li>
                                 ))}
                             </ul>
                         </div>

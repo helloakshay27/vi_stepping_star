@@ -294,6 +294,14 @@
   padding-right: 10px;
 }
 
+.dropdown{
+  background-color: white;
+  position:relative;
+  top:100px;
+  left:20px;
+
+}
+
 /* Control styles (for the input box) */
 .select__control {
   height: 40px !important; /* Adjusting height for visibility */
