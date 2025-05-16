@@ -336,10 +336,11 @@ const dashboard = () => {
 
 
     return (
-        <div>
+        <div className="dashboard">
+            
             <div className='header'>
                 <img alt="logo" src="logo.png" />
-                <div className="w-25 header-right">
+                <div className=" header-right">
 
                     <Select
                         isMulti
@@ -364,18 +365,20 @@ const dashboard = () => {
                               )
                         }}
                     />
-
-                    <CircleUser className="user-icon" onClick={handleDropDown}/>
-                    {
-                        showUserModal && (
-                            <div className="dropdown">
-                                <span><CircleUser size={24} style={{display:"inline"}}/><p style={{display:"inline"}}>My Profile</p></span>
-                               <span><Settings size={24}/><p>Account Settings</p> </span>
-                               <span><LogOut size={24}/><p>SignOut</p></span>
-                             </div>   
-                        )
-                    }
+                    <div className="user-icon-wrapper" style={{ position: 'relative' }}> {/* This is a flex item, and the new positioning context */}
+      <CircleUser className="user-icon" onClick={handleDropDown}/>
+      {showUserModal && (
+        <div className="dropdown"> {/* This will be absolute, positioned relative to user-icon-wrapper */}
+          <span style={{borderBottom:"1px solid #DDD" ,display:"inline"
+          }}><CircleUser size={18} style={{display:"inline",margin:"8px",marginRight:"10px",}}/><p style={{display:"inline"}}>My Profile</p></span>
+          <span style={{borderBottom:"1px solid #DDD",display:"inline"}}><Settings size={18} style={{display:"inline",   margin:"8px",marginRight:"10px",}}/><p style={{display:"inline"}}>Account</p></span>
+          <span style={{display:"inline"}}><LogOut size={18} style={{display:"inline",margin:"8px",marginRight:"10px"}}/><p style={{display:"inline"}}>SignOut</p></span>
+        </div>
+      )}
+    </div>
                 </div>
+                
+                     
             </div>
             <div className="flex d-col gap-2 p-lg-3 p-md-2">
                 <div className="d-flex flex-row align-items-center justify-content-between " style={{ height: "60px", padding: "10px 60px" }}>
