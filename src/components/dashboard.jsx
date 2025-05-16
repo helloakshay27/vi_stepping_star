@@ -170,8 +170,21 @@ const dashboard = () => {
         XLSX.writeFile(workbook, 'FunctionRanking.xlsx')
     }
 
+        const stepCountToExcel = () => {
+            const clusterData = {
+                avgStepCount: stepCount
+            };
+
+            const worksheet = XLSX.utils.json_to_sheet(clusterData);
+            
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'Step Count');
+
+            // Trigger download
+            XLSX.writeFile(workbook, 'StepCount.xlsx')
+        }
     const top10clusterToExcel = () => {
-        const clusterData = clusterRanking.map((item, index) => ({
+        const count = clusterRanking.map((item, index) => ({
             Rank: index + 1,
             'Cluster': item.cluster_name,
             'Avg Steps': item.avg_steps
@@ -520,10 +533,9 @@ return () => {
                                 </div>
                                 <div class="step-value">{stepCount ? stepCount : 0}</div>
                             </div>
-                            <div>
-                                <span className="icon"><Download style={{ color: "#888" }} /></span>
-
-                            </div>
+                            
+                                <span className="icon" onClick={stepCountToExcel}><Download style={{ color: "#888" }} /></span>
+                            
                         </div>
                         <div ><p style={{ marginTop: "55px", fontWeight: "500" }}>An Organisation's Daily Step Count</p></div>
                     </div>

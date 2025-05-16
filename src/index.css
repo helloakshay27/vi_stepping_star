@@ -120,7 +120,13 @@
 }
 
 .card-header .icon {
-  cursor: pointer;
+  cursor: pointer !important;
+  color: #888;
+  /* Add styling for your icon (font size, etc.) */
+}
+
+.icon{
+  cursor: pointer !important;
   color: #888;
   /* Add styling for your icon (font size, etc.) */
 }
@@ -378,8 +384,7 @@
   width: 100%;
   overflow-x: hidden;
   box-sizing: border-box;
-  z-index:10;
-  position: relative;
+  z-index: 1;
 }
 
 .card {
