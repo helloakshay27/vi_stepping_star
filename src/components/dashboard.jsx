@@ -663,6 +663,7 @@ const dashboard = () => {
                                     />
 
                                     <YAxis
+                                        domain={[0,20000]}
                                         dataKey="steps"
                                         label={{
                                             value: "Average Steps Taken",
