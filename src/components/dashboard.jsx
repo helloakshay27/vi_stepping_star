@@ -271,7 +271,7 @@ fetchNames();
 useEffect(() => {
     const handleClickOutside = (event) => {
   if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-    setShowUserModal(false);
+    handleDropDown();
   }
 };
 
@@ -282,7 +282,7 @@ if (showUserModal) {
 return () => {
   document.removeEventListener('mousedown', handleClickOutside);
 };
-}, [showUserModal]);
+}, [showUserModal,handleDropDown]);
 
     const handleChange = (selectedOptions) => {
         const checkAll=selectedOptions.find((option) => option.value === "*");
@@ -385,13 +385,13 @@ return () => {
                         }}
                     />
                     <div className="user-icon-wrapper" style={{ position: 'relative' }}> {/* This is a flex item, and the new positioning context */}
-      <CircleUser className="user-icon" onClick={handleDropDown}/>
+      <CircleUser className="user-icon" onClick={handleDropDown} ref={dropdownRef}/>
       {showUserModal && (
-        <div className="dropdown" ref={dropdownRef}> {/* This will be absolute, positioned relative to user-icon-wrapper */}
-          <span style={{borderBottom:"1px solid #DDD" ,display:"inline"
+        <div className="dropdown" > {/* This will be absolute, positioned relative to user-icon-wrapper */}
+          <span style={{borderBottom:"1px solid #DDD" ,display:"inline",textAlign:"left"
           }}><CircleUser size={18} style={{display:"inline",margin:"8px",marginRight:"10px",}}/><p style={{display:"inline"}}>My Profile</p></span>
-          <span style={{borderBottom:"1px solid #DDD",display:"inline"}}><Settings size={18} style={{display:"inline",   margin:"8px",marginRight:"10px",}}/><p style={{display:"inline"}}>Account</p></span>
-          <span style={{display:"inline"}}><LogOut size={18} style={{display:"inline",margin:"8px",marginRight:"10px"}}/><p style={{display:"inline"}}>SignOut</p></span>
+          <span style={{borderBottom:"1px solid #DDD",display:"inline",textAlign:"left"}}><Settings size={18} style={{display:"inline",   margin:"8px",marginRight:"10px",}}/><p style={{display:"inline"}}>Account</p></span>
+          <span style={{display:"inline",textAlign:"left"}}><LogOut size={18} style={{display:"inline",margin:"8px",marginRight:"10px"}}/><p style={{display:"inline"}}>SignOut</p></span>
         </div>
       )}
     </div>
