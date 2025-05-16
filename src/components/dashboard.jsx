@@ -1,5 +1,5 @@
 import "react-datepicker/dist/react-datepicker.css";
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, use } from 'react'
 import axios from 'axios';
 import DatePicker from "react-datepicker";
 import { Calendar, Download,CircleUser, Settings, LogOut } from "lucide-react";
@@ -19,6 +19,7 @@ import {
     ResponsiveContainer,
 } from 'recharts';
 import { se } from "date-fns/locale";
+import { set } from "date-fns";
 
 
 
@@ -38,6 +39,7 @@ const dashboard = () => {
     const [circleRanking, setCircleRanking] = useState([]);
 
     const [loading, setLoading] = useState(false);
+    const dropdownRef = React.useRef(null);
 
 
 
@@ -256,14 +258,31 @@ const dashboard = () => {
         console.error("Failed to fetch names:", error);
     }
 };
-
-
-        fetchNames();
+fetchNames();
     }, []);
+
+
     useEffect(() => {
         formatData();
 
     }, [selectedId]);
+
+    
+useEffect(() => {
+    const handleClickOutside = (event) => {
+  if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+    setShowUserModal(false);
+  }
+};
+
+if (showUserModal) {
+  document.addEventListener('mousedown', handleClickOutside);
+}
+
+return () => {
+  document.removeEventListener('mousedown', handleClickOutside);
+};
+}, [showUserModal]);
 
     const handleChange = (selectedOptions) => {
         const checkAll=selectedOptions.find((option) => option.value === "*");
@@ -368,7 +387,7 @@ const dashboard = () => {
                     <div className="user-icon-wrapper" style={{ position: 'relative' }}> {/* This is a flex item, and the new positioning context */}
       <CircleUser className="user-icon" onClick={handleDropDown}/>
       {showUserModal && (
-        <div className="dropdown"> {/* This will be absolute, positioned relative to user-icon-wrapper */}
+        <div className="dropdown" ref={dropdownRef}> {/* This will be absolute, positioned relative to user-icon-wrapper */}
           <span style={{borderBottom:"1px solid #DDD" ,display:"inline"
           }}><CircleUser size={18} style={{display:"inline",margin:"8px",marginRight:"10px",}}/><p style={{display:"inline"}}>My Profile</p></span>
           <span style={{borderBottom:"1px solid #DDD",display:"inline"}}><Settings size={18} style={{display:"inline",   margin:"8px",marginRight:"10px",}}/><p style={{display:"inline"}}>Account</p></span>
