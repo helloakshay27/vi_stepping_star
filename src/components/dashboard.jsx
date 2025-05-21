@@ -41,6 +41,8 @@ const dashboard = () => {
     const [loading, setLoading] = useState(false);
     const dropdownRef = React.useRef(null);
 
+    const [isDownloading, setIsDownloading] = useState(false);
+
 
 
     const [pieChartData, setPieChartData] = useState([]);
@@ -95,49 +97,156 @@ const dashboard = () => {
         setShowUserModal(!showUserModal);
     }
     const genderwiseToExcel = async() => {
-         window.open(`https://reports.lockated.com/api-fm/stepathon/get-gender-participation-download/?site_id=${formattedId}&society_id=null&from_date=${formattedStartDate}&to_date=${formattedEndDate}`, "_blank");
+    setIsDownloading(true);
+    try {
+      const response = await fetch(`https://reports.lockated.com/api-fm/stepathon/get-gender-participation-download/?site_id=${formattedId}&society_id=null&from_date=${formattedStartDate}&to_date=${formattedEndDate}`);
+
+      if (!response.ok) {
+        alert("Failed to download file");
+        return;
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'total_gender_participation.xlsx');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      alert("Download failed: " + error.message);
+    } finally {
+      setIsDownloading(false);
     }
+  };
+        
+        //  window.open(`https://reports.lockated.com/api-fm/stepathon/get-gender-participation-download/?site_id=${formattedId}&society_id=null&from_date=${formattedStartDate}&to_date=${formattedEndDate}`, "_blank");
 
-    const kAchieversToExcel = () => {
-         window.open(`https://reports.lockated.com/api-fm/stepathon/circle-wise-20k-achiever-export/?from_date=${formattedStartDate}&to_date=${formattedEndDate}&site_id=${formattedId}&export=excel`, "_blank");
-  
+    const kAchieversToExcel = async() => {
+        setIsDownloading(true);
+    try {
+      const response = await fetch(`https://reports.lockated.com/api-fm/stepathon/circle-wise-20k-achiever-export/?from_date=${formattedStartDate}&to_date=${formattedEndDate}&site_id=${formattedId}&export=excel`);
+
+      if (!response.ok) {
+        alert("Failed to download file");
+        return;
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'circle_20k_achievers.xlsx');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      alert("Download failed: " + error.message);
+    } finally {
+      setIsDownloading(false);
     }
+  };
+    
+    const top10CircleToExcel = async() => {
+            setIsDownloading(true);
+    try {
+      const response = await fetch(`https://reports.lockated.com/api-fm/stepathon/circle-leveling-ranking-export/?from_date=${formattedStartDate}&to_date=${formattedEndDate}&site_id=${formattedId}&export=excel`);
 
-    const top10CircleToExcel = () => {
-        window.open(`https://reports.lockated.com/api-fm/stepathon/circle-leveling-ranking-export/?from_date=${formattedStartDate}&to_date=${formattedEndDate}&site_id=${formattedId}&export=excel`, "_blank");
+      if (!response.ok) {
+        alert("Failed to download file");
+        return;
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'circle_leveling_ranking.xlsx');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      alert("Download failed: " + error.message);
+    } finally {
+      setIsDownloading(false);
     }
+  };
+    
+    const top10FunctionToExcel = async() => {
+                setIsDownloading(true);
+    try {
+      const response = await fetch(`https://reports.lockated.com/api-fm/stepathon/function-leveling-ranking-export/?from_date=${formattedStartDate}&to_date=${formattedEndDate}&site_id=${formattedId}&export=excel`);
 
-    const top10FunctionToExcel = () => {
-        window.open(`https://reports.lockated.com/api-fm/stepathon/function-leveling-ranking-export/?from_date=${formattedStartDate}&to_date=${formattedEndDate}&site_id=${formattedId}&export=excel
-`,"_blank");
+      if (!response.ok) {
+        alert("Failed to download file");
+        return;
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'function_leveling_ranking.xlsx');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      alert("Download failed: " + error.message);
+    } finally {
+      setIsDownloading(false);
     }
+  };
+    
+    const top10clusterToExcel = async() => {
+                setIsDownloading(true);
+    try {
+      const response = await fetch(`https://reports.lockated.com/api-fm/stepathon/cluster-leveling-ranking-export/?from_date=${formattedStartDate}&to_date=${formattedEndDate}&site_id=${formattedId}&export=excel`);
 
-        const stepCountToExcel = () => {
-            const clusterData = {
-                avgStepCount: stepCount
-            };
+      if (!response.ok) {
+        alert("Failed to download file");
+        return;
+      }
 
-            const worksheet = XLSX.utils.json_to_sheet(clusterData);
-            
-            const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, 'Step Count');
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
 
-            // Trigger download
-            XLSX.writeFile(workbook, 'StepCount.xlsx')
-        }
-    const top10clusterToExcel = () => {
-        window.open(`https://reports.lockated.com/api-fm/stepathon/cluster-leveling-ranking-export/?from_date=${formattedStartDate}&to_date=${formattedEndDate}&site_id=${formattedId}&export=excel`,"_blank");
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'cluster_leveling_ranking.xlsx');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      alert("Download failed: " + error.message);
+    } finally {
+      setIsDownloading(false);
     }
-
+  };
 
     const formatData = () => {
         console.log(startDate, endDate);
-         setformattedStartDate (startDate ? startDate.toISOString().split("T")[0] : "");
-        setformattedEndDate (endDate ? endDate.toISOString().split("T")[0] : "");
-         setformattedId (selectedId.length > 0 ? selectedId.join(",") : "");
-        if (selectedId.length > 0) {
-            updateData(formattedId, formattedStartDate, formattedEndDate);
-        }
+         const localFormattedStartDate = startDate ? startDate.toISOString().split("T")[0] : "";
+    const localFormattedEndDate = endDate ? endDate.toISOString().split("T")[0] : "";
+    const localFormattedId = selectedId.length > 0 ? selectedId.join(",") : "";
+
+    // Optionally update state (if used elsewhere)
+    setformattedStartDate(localFormattedStartDate);
+    setformattedEndDate(localFormattedEndDate);
+    setformattedId(localFormattedId);
+
+    if (selectedId.length > 0) {
+        updateData(localFormattedId, localFormattedStartDate, localFormattedEndDate);
+    }
     }
 
     const updateData = async (formattedId, formattedStartDate, formattedEndDate) => {
@@ -461,7 +570,7 @@ return () => {
                                 <div class="step-value">{stepCount ? stepCount : 0}</div>
                             </div>
                             
-                                <span className="icon" onClick={stepCountToExcel}><Download style={{ color: "#888" }} /></span>
+                                <span className="icon" ><Download style={{ color: "#888" }} /></span>
                             
                         </div>
                         <div ><p style={{ marginTop: "55px", fontWeight: "500" }}>An Organisation's Daily Step Count</p></div>
@@ -652,7 +761,7 @@ return () => {
                 </div>
 
             </div>
-            {loading ? <Loader isLoading={loading} /> : null};
+            {(loading || isDownloading)? <Loader isLoading={loading} /> : null};
         </div>
     )
 }
