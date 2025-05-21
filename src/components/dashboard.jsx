@@ -104,11 +104,11 @@ const dashboard = () => {
     }
 
     const top10CircleToExcel = () => {
-        window.open(`https://reports.lockated.com/api-fm/stepathon/circle-leveling-ranking-export/?start_date=${formattedStartDate}&end_date=${formattedEndDate}&site_id=${formattedId}&export=excel`, "_blank");
+        window.open(`https://reports.lockated.com/api-fm/stepathon/circle-leveling-ranking-export/?from_date=${formattedStartDate}&to_date=${formattedEndDate}&site_id=${formattedId}&export=excel`, "_blank");
     }
 
     const top10FunctionToExcel = () => {
-        window.open(`https://reports.lockated.com/api-fm/stepathon/function-leveling-ranking-export/?start_date=${formattedStartDate}&end_date=${formattedEndDate}&site_id=${formattedId}&export=excel
+        window.open(`https://reports.lockated.com/api-fm/stepathon/function-leveling-ranking-export/?from_date=${formattedStartDate}&to_date=${formattedEndDate}&site_id=${formattedId}&export=excel
 `,"_blank");
     }
 
@@ -126,7 +126,7 @@ const dashboard = () => {
             XLSX.writeFile(workbook, 'StepCount.xlsx')
         }
     const top10clusterToExcel = () => {
-        window.open(`https://reports.lockated.com/api-fm/stepathon/cluster-leveling-ranking-export/?start_date=${formattedStartDate}&end_date=${formattedEndDate}&site_id=${formattedId}&export=excel`,"_blank");
+        window.open(`https://reports.lockated.com/api-fm/stepathon/cluster-leveling-ranking-export/?from_date=${formattedStartDate}&to_date=${formattedEndDate}&site_id=${formattedId}&export=excel`,"_blank");
     }
 
 
