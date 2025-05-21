@@ -99,9 +99,8 @@ const dashboard = () => {
     }
 
     const kAchieversToExcel = () => {
-         window.open(`https://reports.lockated.com/api-fm/stepathon/circle-wise-20k-achiever-export/?start_date=${formattedStartDate}&end_date=${formattedEndDate}&site_id=${formattedId}&export=excel`, "_blank");
+         window.open(`https://reports.lockated.com/api-fm/stepathon/circle-wise-20k-achiever-export/?from_date=${formattedStartDate}&to_date=${formattedEndDate}&site_id=${formattedId}&export=excel`, "_blank");
   
-
     }
 
     const top10CircleToExcel = () => {
@@ -143,6 +142,7 @@ const dashboard = () => {
 
     const updateData = async (formattedId, formattedStartDate, formattedEndDate) => {
         setLoading(true);
+        console.log(formattedId, formattedStartDate, formattedEndDate);
         try {
             const genderData = await axios.get(
                 `https://reports.lockated.com/api-fm/stepathon/get-gender-participation/?site_id=${formattedId}&from_date=${formattedStartDate}&to_date=${formattedEndDate}`
