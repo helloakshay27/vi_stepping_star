@@ -761,7 +761,7 @@ return () => {
                 </div>
 
             </div>
-            {(loading || isDownloading)? <Loader isLoading={loading} /> : null};
+            {(loading || isDownloading)? <Loader isLoading={loading||isDownloading} /> : null};
         </div>
     )
 }
