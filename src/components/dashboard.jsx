@@ -48,6 +48,10 @@ const dashboard = () => {
     const Startdatepickref = React.useRef(null);
     const Enddatepickref = React.useRef(null);
     const [options,setOptions]= useState([]);
+
+    const [formattedStartDate,setformattedStartDate] =useState(null);
+    const [formattedEndDate,setformattedEndDate] =useState(null);
+    const [formattedId,setformattedId] =useState(null);
     
 
 
@@ -90,84 +94,23 @@ const dashboard = () => {
     const handleDropDown=()=>{
         setShowUserModal(!showUserModal);
     }
-    const genderwiseToExcel = () => {
-        const genderData = pieChartData.map((item, index) => ({
-            Gender: item.name,
-            'User Count': item.value
-        }));
-
-        const worksheet = XLSX.utils.json_to_sheet(genderData);
-        worksheet['!cols'] = [
-            { wch: Math.max(...genderData.map(d => d["Gender"].length), 10) + 2 },
-            { wch: 12 },
-        ];
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, 'Gender');
-
-        // Trigger download
-        XLSX.writeFile(workbook, 'GenderList.xlsx')
+    const genderwiseToExcel = async() => {
+         window.open(`https://reports.lockated.com/api-fm/stepathon/get-gender-participation-download/?site_id=${formattedId}&society_id=null&from_date=${formattedStartDate}&to_date=${formattedEndDate}`, "_blank");
     }
 
     const kAchieversToExcel = () => {
-        const achieversData = achieversCount.map((item, index) => ({
-            Rank: index + 1,
-            'Circle Name': item.circle_name,
-            'User Count': item.users_with_20k_steps
-        }));
-
-        const worksheet = XLSX.utils.json_to_sheet(achieversData);
-        worksheet['!cols'] = [
-            { wch: 6 }, // Rank
-            { wch: Math.max(...achieversData.map(d => d["Circle Name"].length), 10) + 2 }, // Circle Name
-            { wch: 12 }, // Avg Steps
-        ];
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, 'Achievers');
-
-        // Trigger download
-        XLSX.writeFile(workbook, 'AchieversList.xlsx')
+         window.open(`https://reports.lockated.com/api-fm/stepathon/circle-wise-20k-achiever-export/?start_date=${formattedStartDate}&end_date=${formattedEndDate}&site_id=${formattedId}&export=excel`, "_blank");
+  
 
     }
 
     const top10CircleToExcel = () => {
-        const circleData = circleRanking.map((item, index) => ({
-            Rank: index + 1,
-            'Circle Name': item.circle_name,
-            'Avg Steps': item.avg_steps
-        }));
-
-        const worksheet = XLSX.utils.json_to_sheet(circleData);
-
-        worksheet['!cols'] = [
-            { wch: 6 }, // Rank
-            { wch: Math.max(...circleData.map(d => d["Circle Name"].length), 10) + 2 }, // Circle Name
-            { wch: 12 }, // Avg Steps
-        ];
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, 'CircleRanking');
-
-        // Trigger download
-        XLSX.writeFile(workbook, 'CircleRanking.xlsx')
+        window.open(`https://reports.lockated.com/api-fm/stepathon/circle-leveling-ranking-export/?start_date=${formattedStartDate}&end_date=${formattedEndDate}&site_id=${formattedId}&export=excel`, "_blank");
     }
 
     const top10FunctionToExcel = () => {
-        const functionData = functionRanking.map((item, index) => ({
-            Rank: index + 1,
-            'Functions': item.department_name,
-            'Avg Steps': item.avg_steps
-        }));
-
-        const worksheet = XLSX.utils.json_to_sheet(functionData);
-        worksheet['!cols'] = [
-            { wch: 6 },
-            { wch: Math.max(...functionData.map(d => d["Functions"].length), 10) + 2 },
-            { wch: 12 },
-        ];
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, 'FunctionRanking');
-
-        // Trigger download
-        XLSX.writeFile(workbook, 'FunctionRanking.xlsx')
+        window.open(`https://reports.lockated.com/api-fm/stepathon/function-leveling-ranking-export/?start_date=${formattedStartDate}&end_date=${formattedEndDate}&site_id=${formattedId}&export=excel
+`,"_blank");
     }
 
         const stepCountToExcel = () => {
@@ -184,31 +127,15 @@ const dashboard = () => {
             XLSX.writeFile(workbook, 'StepCount.xlsx')
         }
     const top10clusterToExcel = () => {
-        const count = clusterRanking.map((item, index) => ({
-            Rank: index + 1,
-            'Cluster': item.cluster_name,
-            'Avg Steps': item.avg_steps
-        }));
-
-        const worksheet = XLSX.utils.json_to_sheet(clusterData);
-        worksheet['!cols'] = [
-            { wch: 6 }, // Rank
-            { wch: Math.max(...clusterData.map(d => d["Cluster"].length), 10) + 2 }, // Circle Name
-            { wch: 12 }, // Avg Steps
-        ];
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, 'ClusterRanking');
-
-        // Trigger download
-        XLSX.writeFile(workbook, 'ClusterRanking.xlsx')
+        window.open(`https://reports.lockated.com/api-fm/stepathon/cluster-leveling-ranking-export/?start_date=${formattedStartDate}&end_date=${formattedEndDate}&site_id=${formattedId}&export=excel`,"_blank");
     }
 
 
     const formatData = () => {
         console.log(startDate, endDate);
-        const formattedStartDate = startDate ? startDate.toISOString().split("T")[0] : "";
-        const formattedEndDate = endDate ? endDate.toISOString().split("T")[0] : "";
-        const formattedId = selectedId.length > 0 ? selectedId.join(",") : "";
+         setformattedStartDate (startDate ? startDate.toISOString().split("T")[0] : "");
+        setformattedEndDate (endDate ? endDate.toISOString().split("T")[0] : "");
+         setformattedId (selectedId.length > 0 ? selectedId.join(",") : "");
         if (selectedId.length > 0) {
             updateData(formattedId, formattedStartDate, formattedEndDate);
         }
@@ -223,7 +150,7 @@ const dashboard = () => {
             setGender(genderData.data.response1);
 
             const achieversData = await axios.get(
-                `https://reports.lockated.com/api-fm/stepathon/circle-wise-20k-acheiver/?site_id=${formattedId}&from_date=${formattedStartDate}&to_date=${formattedEndDate}`
+                `https://reports.lockated.com/api-fm/stepathon/circle-wise-20k-achiever/?site_id=${formattedId}&from_date=${formattedStartDate}&to_date=${formattedEndDate}`
             );
             setAchieversCount(achieversData.data.data);
 
