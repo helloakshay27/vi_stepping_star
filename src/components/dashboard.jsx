@@ -233,6 +233,33 @@ const dashboard = () => {
     }
   };
 
+  const stepCountToExcel = async() => {
+                setIsDownloading(true);
+    try {
+      const response = await fetch(`https://reports.lockated.com/api-fm/stepathon/get-organisation-daily-step-count-download/?from_date=${formattedStartDate}&to_date=${formattedEndDate}&site_id=${formattedId}`);
+
+      if (!response.ok) {
+        alert("Failed to download file");
+        return;
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'Daily_step_count.xlsx');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      alert("Download failed: " + error.message);
+    } finally {
+      setIsDownloading(false);
+    }
+  }
+
     const formatData = () => {
         console.log(startDate, endDate);
          const localFormattedStartDate = startDate ? startDate.toISOString().split("T")[0] : "";
@@ -570,7 +597,7 @@ return () => {
                                 <div class="step-value">{stepCount ? stepCount : 0}</div>
                             </div>
                             
-                                <span className="icon" ><Download style={{ color: "#888" }} /></span>
+                                <span className="icon" onClick={stepCountToExcel}><Download style={{ color: "#888" }} /></span>
                             
                         </div>
                         <div ><p style={{ marginTop: "55px", fontWeight: "500" }}>An Organisation's Daily Step Count</p></div>
