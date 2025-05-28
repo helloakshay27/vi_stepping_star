@@ -286,22 +286,22 @@ const dashboard = () => {
             setGender(genderData.data.response1);
 
             const achieversData = await axios.get(
-                `https://reports.lockated.com/api-fm/stepathon/circle-wise-20k-achiever/?site_id=${formattedId}&from_date=${formattedStartDate}&to_date=${formattedEndDate}`
+                `https://reports.lockated.com/api-fm/stepathon/circle-wise-20k-achiever/?site_id=${formattedId}&start_date=${formattedStartDate}&end_date=${formattedEndDate}`
             );
             setAchieversCount(achieversData.data.data);
 
             const functionRankingData = await axios.get(
-                `https://reports.lockated.com/api-fm/stepathon/function-leveling-ranking/?site_id=${formattedId}&from_date=${formattedStartDate}&to_date=${formattedEndDate}`
+                `https://reports.lockated.com/api-fm/stepathon/function-leveling-ranking/?site_id=${formattedId}&start_date=${formattedStartDate}&end_date=${formattedEndDate}`
             );
             setFunctionRanking(functionRankingData.data.data);
 
             const clusterRankingData = await axios.get(
-                `https://reports.lockated.com/api-fm/stepathon/cluster-leveling-ranking/?site_id=${formattedId}&from_date=${formattedStartDate}&to_date=${formattedEndDate}`
+                `https://reports.lockated.com/api-fm/stepathon/cluster-leveling-ranking/?site_id=${formattedId}&start_date=${formattedStartDate}&end_date=${formattedEndDate}`
             );
             setClusterRanking(clusterRankingData.data.data);
 
             const circleRankingData = await axios.get(
-                `https://reports.lockated.com/api-fm/stepathon/circle-leveling-ranking/?site_id=${formattedId}&from_date=${formattedStartDate}&to_date=${formattedEndDate}`
+                `https://reports.lockated.com/api-fm/stepathon/circle-leveling-ranking/?site_id=${formattedId}&start_date=${formattedStartDate}&end_date=${formattedEndDate}`
             );
             setCircleRanking(circleRankingData.data.data);
 
