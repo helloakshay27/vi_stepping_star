@@ -54,6 +54,7 @@ const dashboard = () => {
     const [formattedStartDate,setformattedStartDate] =useState(null);
     const [formattedEndDate,setformattedEndDate] =useState(null);
     const [formattedId,setformattedId] =useState(null);
+    const[dateChecker,setDateChecker]= useState(false);
     
 
 
@@ -77,15 +78,21 @@ const dashboard = () => {
                 steps: item.avg_steps
             }));
             setBarChartData1(formattedData);
+        }else{
+            setBarChartData1("");
         }
         if (functionRanking?.length > 0) {
             const formattedData = functionRanking.map(item => ({
                 function: item.department_name,
                 steps: item.avg_steps
             }));
+            
             console.log(formattedData);
             setBarChartData2(formattedData);
         }
+        else{
+                setBarChartData2("");
+            }
     }, [clusterRanking, functionRanking]);
 
 
@@ -261,7 +268,6 @@ const dashboard = () => {
   }
 
     const formatData = () => {
-        console.log(startDate, endDate);
          const localFormattedStartDate = startDate ? startDate.toISOString().split("T")[0] : "";
     const localFormattedEndDate = endDate ? endDate.toISOString().split("T")[0] : "";
     const localFormattedId = selectedId.length > 0 ? selectedId.join(",") : "";
