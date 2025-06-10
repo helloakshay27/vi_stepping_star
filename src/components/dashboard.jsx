@@ -342,7 +342,20 @@ fetchNames();
     }, []);
 
 
+function formatTimestampToCustomDate(timestamp) {
+  const date = new Date(timestamp);
 
+  // Options for formatting the date
+  const options = {
+    weekday: 'long',  // "Tuesday"
+    month: 'long',    // "June"
+    day: 'numeric',   // "10"
+    year: 'numeric'   // "2025"
+  };
+
+  // Use toLocaleDateString to format the date
+  return date.toLocaleDateString('en-US', options);
+}
     
 useEffect(() => {
     const handleClickOutside = (event) => {
@@ -460,6 +473,9 @@ return () => {
                               )
                         }}
                     /> */}
+                   <span className="mt-2 text-[16px]"> {
+                        formatTimestampToCustomDate(Date.now())
+                    }</span>
                     <div className="user-icon-wrapper" style={{ position: 'relative' }}> {/* This is a flex item, and the new positioning context */}
       <CircleUser className="user-icon" onClick={handleDropDown} ref={dropdownRef}/>
       {showUserModal && (
