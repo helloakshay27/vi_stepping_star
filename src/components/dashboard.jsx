@@ -473,7 +473,7 @@ return () => {
                               )
                         }}
                     /> */}
-                   <span className="mt-2 text-[16px]"> {
+                   <span className="mt-2" style={{"fontSize":"18px",fontWeight:"400"}}> {
                         formatTimestampToCustomDate(Date.now())
                     }</span>
                     <div className="user-icon-wrapper" style={{ position: 'relative' }}> {/* This is a flex item, and the new positioning context */}
