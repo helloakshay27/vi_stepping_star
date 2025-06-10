@@ -106,7 +106,7 @@ const dashboard = () => {
     const genderwiseToExcel = async() => {
     setIsDownloading(true);
     try {
-      const response = await fetch(`https://reports.lockated.com/api-fm/stepathon/get-gender-participation-download/?site_id=${formattedId}&society_id=null&from_date=${formattedStartDate}&to_date=${formattedEndDate}`);
+      const response = await fetch(`https://reports.lockated.com/api-fm/stepathon/gender-participation-export/?site_id=${formattedId}&from_date=${formattedStartDate}&to_date=${formattedEndDate}&export=excel`);
 
       if (!response.ok) {
         alert("Failed to download file");
@@ -287,9 +287,9 @@ const dashboard = () => {
         console.log(formattedId, formattedStartDate, formattedEndDate);
         try {
             const genderData = await axios.get(
-                `https://reports.lockated.com/api-fm/stepathon/get-gender-participation/?site_id=${formattedId}&from_date=${formattedStartDate}&to_date=${formattedEndDate}`
+                `https://reports.lockated.com/api-fm/stepathon/gender-participation-datewise/?site_id=${formattedId}&from_date=${formattedStartDate}&to_date=${formattedEndDate}`
             );
-            setGender(genderData.data.response1);
+            setGender({female:genderData.data.final_female_count, male:genderData.data.final_male_count});
 
             const achieversData = await axios.get(
                 `https://reports.lockated.com/api-fm/stepathon/circle-wise-20k-achiever/?site_id=${formattedId}&from_date=${formattedStartDate}&to_date=${formattedEndDate}`
@@ -333,9 +333,7 @@ const dashboard = () => {
             label: item.name,
             value: item.id,
         }));
-        setNames(formattedNames);
-        setOptions([{ label: "Select All", value: "*" }, ...formattedNames]);
-        console.log(options);
+        setSelectedId(formattedNames.map((name) => name.value));
     } catch (error) {
         console.error("Failed to fetch names:", error);
     }
@@ -344,10 +342,6 @@ fetchNames();
     }, []);
 
 
-    useEffect(() => {
-        formatData();
-
-    }, [selectedId]);
 
     
 useEffect(() => {
@@ -369,7 +363,7 @@ return () => {
     const handleChange = (selectedOptions) => {
         const checkAll=selectedOptions.find((option) => option.value === "*");
         if(checkAll){
-            setSelectedId(names.map((name) => name.value));
+            setSelectedId([]);
         }
         else{
             setSelectedId(selectedOptions.map((option) => option.value));
@@ -443,7 +437,7 @@ return () => {
                 <img alt="logo" src="logo.png" />
                 <div className=" header-right">
 
-                    <Select
+                    {/* <Select
                         isMulti
                         options={options}
                         onChange={handleChange}
@@ -465,7 +459,7 @@ return () => {
                                 <span>{label}</span>
                               )
                         }}
-                    />
+                    /> */}
                     <div className="user-icon-wrapper" style={{ position: 'relative' }}> {/* This is a flex item, and the new positioning context */}
       <CircleUser className="user-icon" onClick={handleDropDown} ref={dropdownRef}/>
       {showUserModal && (
